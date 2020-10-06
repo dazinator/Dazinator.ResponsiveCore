@@ -71,3 +71,5 @@ The extension methods provided in `Dazinator.AspNetCore.Builder.ReloadablePipeli
 These core api's are in the `Dazinator.AspNetCore.Builder.ReloadablePipeline` nuget package.
 You can use / run the middleware passing in a `Func<IChangeToken>` which can supply whatever custom change token you want to use to signal a pipeline rebuild - this could also be `CompositeChangeToken` if you have multiple sources.
 
+You can also supply your own cancellation tokens for a pipeline, see the sample for a demonstration of that: https://github.com/dazinator/Dazinator.AspNetCore.Builder.ReloadablePipeline/blob/master/src/Sample/Startup.cs
+
