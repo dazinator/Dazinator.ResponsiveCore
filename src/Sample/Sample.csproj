@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <DisableImplicitComponentsAnalyzers>true</DisableImplicitComponentsAnalyzers>
+        <LangVersion>8.0</LangVersion>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Dazinator.AspNetCore.Builder.ReloadablePipeline.Options\ReloadablePipeline.Options.csproj" />
+    </ItemGroup>
+
+</Project>
