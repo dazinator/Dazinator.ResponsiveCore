@@ -33,7 +33,7 @@ namespace Microsoft.AspNetCore.Builder
         {
 
             var monitor = builder.ApplicationServices.GetRequiredService<IOptionsMonitor<TOptions>>();
-            return AplicationBuilderCallbackRegistrationExtensions.AddReloadablePipelineMiddleware(builder, (onChangedCallback) =>
+            return CallbackRegistrationExtensions.AddReloadablePipelineMiddleware(builder, (onChangedCallback) =>
             {
                 return monitor.OnChange(a => onChangedCallback());
             }, (b) =>
