@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Builder
             Action<IApplicationBuilder> configure,
             bool isTerminal)
         {
-            var changeTokenFactory = ChangeTokenFactoryHelper.UseCallbackRegistrations(registerListener);     
+            var changeTokenFactory = ChangeTokenFactoryHelper.UseCallbackRegistrations(registerListener);
             return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal);
         }
     }

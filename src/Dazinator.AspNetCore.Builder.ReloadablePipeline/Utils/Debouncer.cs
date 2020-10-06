@@ -31,10 +31,10 @@ namespace Microsoft.Extensions.Primitives
                 }
                 else
                 {
-                   // Console.WriteLine("debounced..");
+                    // Console.WriteLine("debounced..");
                 }
 #if NETSTANDARD2_0
-                  task.Dispose();
+                task.Dispose();
 #endif
 
             }, cts.Token);
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.Primitives
         {
             int current = Interlocked.Increment(ref counter);
 
-            if(counter > 1000)
+            if (counter > 1000)
             {
                 // detect error
                 Console.WriteLine("debounc limit exceeded: " + counter);
@@ -73,7 +73,7 @@ namespace Microsoft.Extensions.Primitives
                 if (current == counter && !cts.IsCancellationRequested)
                 {
                     action(state);
-                }               
+                }
                 else
                 {
                     Console.WriteLine("debounced..");

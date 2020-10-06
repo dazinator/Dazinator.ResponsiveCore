@@ -12,8 +12,8 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
         private readonly bool _isTerminal;
 
         public ReloadPipelineMiddleware(
-            RequestDelegate next,            
-            IApplicationBuilder rootBuilder, 
+            RequestDelegate next,
+            IApplicationBuilder rootBuilder,
             RequestDelegateFactory factory, bool isTerminal)
         {
             _next = next;

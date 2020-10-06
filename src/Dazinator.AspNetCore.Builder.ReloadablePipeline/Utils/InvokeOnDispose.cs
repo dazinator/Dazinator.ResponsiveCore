@@ -16,5 +16,3 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline.Utils
         }
     }
 }
-
-

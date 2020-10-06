@@ -3,7 +3,7 @@
 namespace Microsoft.Extensions.Primitives
 {
     public static class ChangeTokenHelper
-    {     
+    {
         private const int DefaultDelayInMilliseconds = 500;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Primitives
         public static IDisposable OnChangeDebounce(Func<IChangeToken> changeTokenFactory, Action listener, int delayInMilliseconds = DefaultDelayInMilliseconds)
         {
             var debouncer = new Debouncer(TimeSpan.FromMilliseconds(delayInMilliseconds));
-            var token = ChangeToken.OnChange(changeTokenFactory, ()=> debouncer.Debouce(listener));
+            var token = ChangeToken.OnChange(changeTokenFactory, () => debouncer.Debouce(listener));
             return token;
         }
 
