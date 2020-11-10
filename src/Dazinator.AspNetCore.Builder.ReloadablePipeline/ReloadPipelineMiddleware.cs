@@ -7,24 +7,20 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     public class ReloadPipelineMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly RequestDelegateFactory _factory;
-        private readonly IApplicationBuilder _rootBuilder;
-        private readonly bool _isTerminal;
-
+        private readonly IRequestDelegateFactory _factory;
         public ReloadPipelineMiddleware(
             RequestDelegate next,
             IApplicationBuilder rootBuilder,
-            RequestDelegateFactory factory, bool isTerminal)
+            IRequestDelegateFactory factory)
         {
             _next = next;
-            _factory = factory;
-            _rootBuilder = rootBuilder;
-            _isTerminal = isTerminal;
+            factory.Initialise(_next);
+            _factory = factory;          
         }
 
         public async Task Invoke(HttpContext context)
         {
-            var requestDelegate = _factory.Get(_rootBuilder, _next, _isTerminal);
+            var requestDelegate = _factory.Get();
             await requestDelegate.Invoke(context);
         }
     }
