@@ -16,12 +16,14 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder"></param>
         ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline(this IApplicationBuilder builder,
             Func<CancellationToken> getCancellationToken,
-            Action<IApplicationBuilder> configure)
+            Action<IApplicationBuilder> configure,
+             IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, false);
+            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, false, rebuildStrategy);
         }
 
         /// <summary>
@@ -30,12 +32,14 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder"></param>
         ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder RunReloadablePipeline(this IApplicationBuilder builder,
           Func<CancellationToken> getCancellationToken,
-          Action<IApplicationBuilder> configure)
+          Action<IApplicationBuilder> configure,
+           IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, true);
+            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, true, rebuildStrategy);
         }
 
 
@@ -47,14 +51,16 @@ namespace Microsoft.AspNetCore.Builder
         ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
         /// <param name="isTerminal"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder AddReloadablePipelineMiddleware(this IApplicationBuilder builder,
             Func<CancellationToken> getCancellationToken,
             Action<IApplicationBuilder> configure,
-            bool isTerminal)
+            bool isTerminal,
+             IRebuildStrategy rebuildStrategy)
         {
             var changeTokenFactory = ChangeTokenFactoryHelper.UseCancellationTokens(getCancellationToken);
-            return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal);
+            return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal, rebuildStrategy);
         }
 
     }

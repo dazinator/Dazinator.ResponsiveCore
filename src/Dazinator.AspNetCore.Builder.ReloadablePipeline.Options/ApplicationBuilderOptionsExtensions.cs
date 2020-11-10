@@ -1,4 +1,5 @@
 using System;
+using Dazinator.AspNetCore.Builder.ReloadablePipeline;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -6,17 +7,34 @@ namespace Microsoft.AspNetCore.Builder
 {
     public static class ApplicationBuilderOptionsExtensions
     {
+        /// <summary>
+        /// Use a pipeline that will reload when an Options change is detected via <see cref="IOptionsMonitor{TOptions}"/>
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="configure"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
+        /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline<TOptions>(this IApplicationBuilder builder,
-            Action<IApplicationBuilder, TOptions> configure)
+            Action<IApplicationBuilder, TOptions> configure, IRebuildStrategy rebuildStrategy = null)
         where TOptions : class
         {
-            return AddReloadablePipeline(builder, configure, false);
+            return AddReloadablePipeline(builder, configure, false, rebuildStrategy);
         }
 
-        public static IApplicationBuilder RunReloadablePipeline<TOptions>(this IApplicationBuilder builder, Action<IApplicationBuilder, TOptions> configure)
+        /// <summary>
+        /// Use a pipeline that will reload when an Options change is detected via <see cref="IOptionsMonitor{TOptions}"/>
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="configure"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
+        /// <returns></returns>
+        public static IApplicationBuilder RunReloadablePipeline<TOptions>(this IApplicationBuilder builder,
+            Action<IApplicationBuilder, TOptions> configure, IRebuildStrategy rebuildStrategy = null)
       where TOptions : class
         {
-            return AddReloadablePipeline(builder, configure, true);
+            return AddReloadablePipeline(builder, configure, true, rebuildStrategy);
         }
 
         /// <summary>
@@ -26,9 +44,10 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="builder"></param>
         /// <param name="configure"></param>
         /// <param name="isTerminal"></param>
+        /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         /// <remarks>You must ensure <typeparamref name="TOptions"/></remarks> has been registered with the options system via services.Configure{TOptions} in ConfigureServices.
-        private static IApplicationBuilder AddReloadablePipeline<TOptions>(this IApplicationBuilder builder, Action<IApplicationBuilder, TOptions> configure, bool isTerminal)
+        private static IApplicationBuilder AddReloadablePipeline<TOptions>(this IApplicationBuilder builder, Action<IApplicationBuilder, TOptions> configure, bool isTerminal, IRebuildStrategy rebuildStrategy)
     where TOptions : class
         {
 
@@ -39,7 +58,7 @@ namespace Microsoft.AspNetCore.Builder
             }, (b) =>
             {
                 configure(b, monitor.CurrentValue);
-            }, isTerminal);
+            }, isTerminal,rebuildStrategy);
         }
     }
 }

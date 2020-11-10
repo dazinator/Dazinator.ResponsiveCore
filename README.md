@@ -73,3 +73,17 @@ You can use / run the middleware passing in a `Func<IChangeToken>` which can sup
 
 You can also supply your own cancellation tokens for a pipeline, see the sample for a demonstration of that: https://github.com/dazinator/Dazinator.AspNetCore.Builder.ReloadablePipeline/blob/master/src/Sample/Startup.cs
 
+## Rebuild Strategies
+
+The default strategy for pipeline rebuilds, is to rebuild it within a lock at the point its invalidated. 
+Once the new pipeline has been build, the new instance is swapped in for the old instance (no locking), and new requests are now pushed through the new instance of the pipeline instead of the old.
+This strategy means there is no downtime for requests - requests continue to be processed through the old pipeline until the new one is swapped in without any lock delaying requests.
+Another optional strategy that is provided out of the box, allows instead for the pipeline to be lazily re-built in line with the next request. This means other requests that occur whilst a rebuild is in progress may queue behind the lock until the rebuild completes, and for this reason - its not the default strategy - however it might prove useful if for example you'd like access to a current httpcontext (request) during the pipeline build itself - which is ordinarly not achievable.
+
+To override the default strategy, pass in an `IRebuildStrategy` as the last optional parameter (you could also implement your own):
+
+```
+   app.UseReloadablePipeline<PipelineOptions>((builder, options) => ConfigureReloadablePipeline(builder, env, options), new RebuildOnDemandStrategy()); // will rebuild the pipeline in line with a request behind a lock.
+
+
+```
