@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
@@ -8,48 +10,28 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     /// </summary>
     public class RebuildOnDemandStrategy : IRebuildStrategy
     {
-        private RequestDelegate _currentRequestDelegate = null;
-        private readonly object _currentInstanceLock = new object();
         private Func<RequestDelegate> _buildDelegate;
-
-        public RebuildOnDemandStrategy()
-        {
-        }
-
+        private Task<RequestDelegate> _currentResult;
+      
         public void Invalidate()
         {
-            _currentRequestDelegate = null;
+            // re-init the task that builds the pipeline.
+            Initialise(_buildDelegate);
         }
 
         public void Initialise(Func<RequestDelegate> buildDelegate)
         {
             _buildDelegate = buildDelegate;
+            _currentResult = new Task<RequestDelegate>(_buildDelegate);
         }
 
-        public RequestDelegate Get()
+        public Task<RequestDelegate> Get()
         {
-            var existing = _currentRequestDelegate;
-            if (existing != null)
-            {
-                return existing;
-            }
-
-            // Only allow one build at a time.
-            lock (_currentInstanceLock)
-            {
-                if (existing != null)
-                {
-                    return existing;
-                }
-
-                var newInstance = _buildDelegate();
-              //  RequestDelegate newInstance = RequestDelegateUtils.BuildRequestDelegate(builder, onNext, _configure, _isTerminal);
-                _currentRequestDelegate = newInstance;
-                // as we don't lock in Invalidate(), it could have just set _currentRequestDelegate back to null here,
-                // that's why we keep hold of and return, newInstance - as this method must always return an instance to satisfy current request.
-                return newInstance;
-            }
-
-        }     
+            // concurrent threads will obtain the same task instance
+            // this task will either be already completed (if previously awaited and pipeline already built)
+            // or task will be run by one of the conccurrent threads. 
+            // Multiple threads awaiting the same task is safe - the task will only run on one thread at a time.
+            return _currentResult;       
+        }
     }
 }

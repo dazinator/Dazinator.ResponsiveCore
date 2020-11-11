@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
@@ -6,6 +7,6 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     public interface IRequestDelegateFactory: IDisposable
     {
         void Initialise(RequestDelegate onNext);
-        RequestDelegate Get();
+        Task<RequestDelegate> GetRequestDelegateTask();
     }
 }

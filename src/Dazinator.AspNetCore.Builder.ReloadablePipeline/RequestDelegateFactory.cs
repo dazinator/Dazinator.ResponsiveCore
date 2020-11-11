@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Builder;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -12,19 +12,15 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     {
         private readonly IRebuildStrategy _rebuildStrategy;
         private readonly Func<RequestDelegate, RequestDelegate> _requestDelegateBuilder;
-
-        //  private readonly IApplicationBuilder _appBuilder;
         private readonly IDisposable _listening = null;
-       // public IApplicationBuilder _subBuilder { get; set; }
 
         public RequestDelegateFactory(
             Func<IChangeToken> getNewChangeToken,
-            IRebuildStrategy rebuildStrategy, 
+            IRebuildStrategy rebuildStrategy,
             Func<RequestDelegate, RequestDelegate> requestDelegateBuilder)
         {
             _rebuildStrategy = rebuildStrategy;
             _requestDelegateBuilder = requestDelegateBuilder;
-            //  _appBuilder = appBuilder;
             _listening = ChangeTokenHelper.OnChangeDebounce(getNewChangeToken, InvokeChanged, delayInMilliseconds: 500);
         }
 
@@ -33,20 +29,18 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
             _rebuildStrategy.Invalidate();
         }
 
-        public RequestDelegate Get()
+        public Task<RequestDelegate> GetRequestDelegateTask()
         {
             return _rebuildStrategy.Get();
         }
 
         public void Dispose() => _listening?.Dispose();
         public void Initialise(RequestDelegate onNext)
-        {           
-            _rebuildStrategy.Initialise(() => {
+        {
+            _rebuildStrategy.Initialise(() =>
+            {
                 return _requestDelegateBuilder(onNext);
             });
         }
-        // public RequestDelegate Get() => throw new NotImplementedException();
-    }   
-
-
+    }
 }

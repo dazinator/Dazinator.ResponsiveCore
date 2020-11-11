@@ -63,7 +63,7 @@ namespace Microsoft.AspNetCore.Builder
             {
                 return RequestDelegateUtils.BuildRequestDelegate(builder, onNext, configure, isTerminal);
             });
-            builder.UseMiddleware<ReloadPipelineMiddleware>(builder, factory);
+            builder.UseMiddleware<ReloadPipelineMiddleware>(factory);
             return builder;
         }
 
