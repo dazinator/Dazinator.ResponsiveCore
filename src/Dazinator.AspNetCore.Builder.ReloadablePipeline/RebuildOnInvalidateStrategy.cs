@@ -10,8 +10,8 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     public class RebuildOnInvalidateStrategy : IRebuildStrategy
     {
         private Task<RequestDelegate> _currentResult = null;
-        private readonly object _currentInstanceLock = new object();    
-        private Func<RequestDelegate> _buildDelegate;      
+        private readonly object _currentInstanceLock = new object();
+        private Func<RequestDelegate> _buildDelegate;
 
         public void Initialise(Func<RequestDelegate> buildDelegate)
         {
@@ -20,22 +20,22 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
             // only want one build at a time, ideally this Initialise() method
             // will not be called concurrently anyway
             // but in case it is, let's make it safe.
-            lock(_currentInstanceLock)
+            lock (_currentInstanceLock)
             {
-                var newInstance = buildDelegate();              
+                var newInstance = buildDelegate();
                 _currentResult = Task.FromResult(newInstance);
-            }                   
+            }
         }
 
         public void Invalidate()
         {
             // re-init the task so it returns a new build of the pipeline.
-            Initialise(_buildDelegate);       
-        }      
+            Initialise(_buildDelegate);
+        }
 
         public Task<RequestDelegate> Get()
         {
-            return _currentResult;     
+            return _currentResult;
         }
     }
 }

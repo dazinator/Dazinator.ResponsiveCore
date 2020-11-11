@@ -58,7 +58,7 @@ namespace Microsoft.AspNetCore.Builder
             }, (b) =>
             {
                 configure(b, monitor.CurrentValue);
-            }, isTerminal,rebuildStrategy);
+            }, isTerminal, rebuildStrategy);
         }
     }
 }

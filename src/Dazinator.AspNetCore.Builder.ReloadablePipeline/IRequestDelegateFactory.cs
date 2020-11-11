@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
 {
-    public interface IRequestDelegateFactory: IDisposable
+    public interface IRequestDelegateFactory : IDisposable
     {
         void Initialise(RequestDelegate onNext);
         Task<RequestDelegate> GetRequestDelegateTask();

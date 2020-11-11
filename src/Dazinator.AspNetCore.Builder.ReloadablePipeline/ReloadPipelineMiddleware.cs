@@ -13,7 +13,7 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
         {
             _next = next;
             factory.Initialise(_next);
-            _factory = factory;          
+            _factory = factory;
         }
 
         public async Task Invoke(HttpContext context)
@@ -25,7 +25,7 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
             // Cool path: The task returned represents some work that needs to be done to build the pipeline in line with this request (if using such an IRebuildStrategy)
             //           - Note: I'm then relying on the fact that this request (and any concurrent request that has reached here) will asynchronously await the same task,
             //           which should result in the task only running once - and its result being made available to all concurrent callers. This avoids having to explicitly place any lock around the rebuild operation.
-            var requestDelegate = await requestDelegateTask; 
+            var requestDelegate = await requestDelegateTask;
             await requestDelegate.Invoke(context);
         }
     }

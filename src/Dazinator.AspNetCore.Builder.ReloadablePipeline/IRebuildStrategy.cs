@@ -9,6 +9,6 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
         void Invalidate();
         Task<RequestDelegate> Get();
         void Initialise(Func<RequestDelegate> buildDelegate);
-    }    
+    }
 
 }

@@ -11,7 +11,7 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
     {
         private Func<RequestDelegate> _buildDelegate;
         private Task<RequestDelegate> _currentResult;
-      
+
         public void Invalidate()
         {
             // re-init the task that builds the pipeline.
@@ -31,7 +31,7 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
             // this task will either be already completed (if previously awaited and pipeline already built)
             // or task will not be completed, and will need to be run, only once, by one of the conccurrent callers. 
             // Multiple callers (awaits) awaiting the same task instance is apparantly safe - the task will only execute once.
-            return _currentResult;       
+            return _currentResult;
         }
     }
 }
