@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
 {
     /// <summary>
-    /// Builds a <see cref="RequestDelegate"/> on demand the first time its requested, in-line with the request, behind a lock.
+    /// Lazily builds a <see cref="RequestDelegate"/> on demand the first time its requested, in-line with the caller.
     /// </summary>
     public class RebuildOnDemandStrategy : IRebuildStrategy
     {
