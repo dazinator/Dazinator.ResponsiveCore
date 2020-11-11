@@ -28,8 +28,8 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
         {
             // concurrent threads will obtain the same task instance
             // this task will either be already completed (if previously awaited and pipeline already built)
-            // or task will be run by one of the conccurrent threads. 
-            // Multiple threads awaiting the same task is safe - the task will only run on one thread at a time.
+            // or task will not be completed, and will need to be run, only once, by one of the conccurrent callers. 
+            // Multiple callers (awaits) awaiting the same task instance is apparantly safe - the task will only execute once.
             return _currentResult;       
         }
     }
