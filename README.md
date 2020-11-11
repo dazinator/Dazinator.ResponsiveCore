@@ -2,6 +2,8 @@
 
 Build middleware pipelines that can be reloaded at runtime - when a changes are detected.
 
+[![Build Status](https://dev.azure.com/darrelltunnell/Public%20Projects/_apis/build/status/dazinator.Dazinator.AspNetCore.Builder.ReloadablePipeline?branchName=develop)](https://dev.azure.com/darrelltunnell/Public%20Projects/_build/latest?definitionId=13&branchName=develop)
+
 ## Example
 
 1. Add the `Dazinator.AspNetCore.Builder.ReloadablePipeline.Options` nuget package to your project.
