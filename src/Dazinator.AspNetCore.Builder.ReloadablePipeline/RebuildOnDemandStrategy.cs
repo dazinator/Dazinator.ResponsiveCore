@@ -15,6 +15,7 @@ namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
         public void Invalidate()
         {
             // re-init the task that builds the pipeline.
+            // but don't run it yet, as we want to defer building the pipeline until something asks for it.
             Initialise(_buildDelegate);
         }
 
