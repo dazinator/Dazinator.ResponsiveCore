@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using Dazinator.AspNetCore.Builder.ReloadablePipeline;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.AspNetCore.Builder
 {

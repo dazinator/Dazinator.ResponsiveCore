@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		..\appveyor.yml = ..\appveyor.yml
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		Directory.Build.props = Directory.Build.props
 		global.json = global.json
 		..\README.md = ..\README.md
 	EndProjectSection
@@ -19,7 +20,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline", "Dazin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline.Options", "Dazinator.AspNetCore.Builder.ReloadablePipeline.Options\ReloadablePipeline.Options.csproj", "{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HostedService", "HostedService\HostedService.csproj", "{B851AF56-7A11-45FF-9C80-EEF42C02DDE0}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{982977A5-6490-4F77-8A3F-4145D17918E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\Shared.projitems*{23e25532-1d9a-4f2f-9fdf-d4d26bbafc58}*SharedItemsImports = 5
+		Shared\Shared.projitems*{982977a5-6490-4f77-8a3f-4145d17918e6}*SharedItemsImports = 13
+		Shared\Shared.projitems*{b851af56-7a11-45ff-9c80-eef42c02dde0}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -37,6 +49,14 @@ Global
 		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B851AF56-7A11-45FF-9C80-EEF42C02DDE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B851AF56-7A11-45FF-9C80-EEF42C02DDE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B851AF56-7A11-45FF-9C80-EEF42C02DDE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B851AF56-7A11-45FF-9C80-EEF42C02DDE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8997E679-83E4-47C5-BE60-309D9C26712F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8997E679-83E4-47C5-BE60-309D9C26712F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8997E679-83E4-47C5-BE60-309D9C26712F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8997E679-83E4-47C5-BE60-309D9C26712F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
