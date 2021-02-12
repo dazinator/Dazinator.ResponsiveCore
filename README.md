@@ -7,8 +7,8 @@ Features:
 
 - Middleware: Define middleware pipelines that can be dynamically reloaded / rebuilt from latest config at runtime, without dropping requests.
 - Background Services: Allow your existing `IHostedService`s to be dynamically started and stopped based on your own logic to determine whether they should be currently enabled or not.
-|
-[![Build Status](https://dev.azure.com/darrelltunnell/Public%20Projects/_apis/build/status/dazinator.Dazinator.AspNetCore.Builder.ReloadablePipeline?branchName=develop)](https://dev.azure.com/darrelltunnell/Public%20Projects/_build/latest?definitionId=13&branchName=develop)
+
+[![Build Status](https://darrelltunnell.visualstudio.com/Public%20Projects/_apis/build/status/dazinator.Dazinator.ResponsiveCore?branchName=develop)](https://darrelltunnell.visualstudio.com/Public%20Projects/_build/latest?definitionId=16&branchName=develop)
 
 ## Reloadable Middleware Pipelines
 
