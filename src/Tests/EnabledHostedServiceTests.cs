@@ -59,24 +59,28 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(sp =>
+                     services.AddEnabledHostedService<MockHostedService>(a =>
                      {
-                         var mockedService = new MockHostedService(
-                         onStartAsync: async (cancelToken) =>
+                         a.UseServiceFactory(sp =>
                          {
-                             startCalled = true;
-                         },
-                        onStopAsync: async (cancelToken) =>
-                        {
-                            stopCalled = true;
-                        });
-                         return mockedService;
+                             var mockedService = new MockHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            });
+                             return mockedService;
 
-                     }, changeTokenFactory, (s) =>
-                     {
-                         return isServiceEnabled;
+                         })
+                             .UseChangeTokenFactory(sp => changeTokenFactory)
+                             .UseEnabledChecker(() =>
+                             {
+                                 return isServiceEnabled;
+                             });
                      });
-
                  });
 
             var result = await host.StartAsync();
@@ -106,24 +110,28 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(sp =>
+                     services.AddEnabledHostedService<MockHostedService>(a =>
                      {
-                         var mockedService = new MockHostedService(
-                         onStartAsync: async (cancelToken) =>
+                         a.UseServiceFactory(sp =>
                          {
-                             startCalled = true;
-                         },
-                        onStopAsync: async (cancelToken) =>
-                        {
-                            stopCalled = true;
-                        });
-                         return mockedService;
+                             var mockedService = new MockHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            });
+                             return mockedService;
 
-                     }, changeTokenFactory, () =>
-                     {
-                         return isServiceEnabled;
+                         })
+                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseEnabledChecker(() =>
+                         {
+                             return isServiceEnabled;
+                         });
                      });
-
                  });
 
             var result = await host.StartAsync();
@@ -170,22 +178,27 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(sp =>
+                     services.AddEnabledHostedService<MockHostedService>(a =>
                      {
-                         var mockedService = new MockHostedService(
-                         onStartAsync: async (cancelToken) =>
+                         a.UseServiceFactory(sp =>
                          {
-                             startCalled = true;
-                         },
-                        onStopAsync: async (cancelToken) =>
-                        {
-                            stopCalled = true;
-                        });
-                         return mockedService;
+                             var mockedService = new MockHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            });
+                             return mockedService;
 
-                     }, changeTokenFactory, () =>
-                     {
-                         return isServiceEnabled;
+                         })
+                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseEnabledChecker(() =>
+                         {
+                             return isServiceEnabled;
+                         });
                      });
 
                  });
@@ -240,22 +253,27 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(sp =>
+                     services.AddEnabledHostedService<MockHostedService>(a =>
                      {
-                         var mockedService = new MockHostedService(
-                         onStartAsync: async (cancelToken) =>
+                         a.UseServiceFactory(sp =>
                          {
-                             startCalled = true;
-                         },
-                        onStopAsync: async (cancelToken) =>
-                        {
-                            stopCalled = true;
-                        });
-                         return mockedService;
+                             var mockedService = new MockHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            });
+                             return mockedService;
 
-                     }, changeTokenFactory, () =>
-                     {
-                         return isServiceEnabled;
+                         })
+                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseEnabledChecker(() =>
+                         {
+                             return isServiceEnabled;
+                         });
                      });
 
                  });
@@ -291,22 +309,27 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(sp =>
+                     services.AddEnabledHostedService<MockHostedService>(a =>
                      {
-                         var mockedService = new MockHostedService(
-                         onStartAsync: async (cancelToken) =>
+                         a.UseServiceFactory(sp =>
                          {
-                             startCalled = true;
-                         },
-                        onStopAsync: async (cancelToken) =>
-                        {
-                            stopCalled = true;
-                        });
-                         return mockedService;
+                             var mockedService = new MockHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            });
+                             return mockedService;
 
-                     }, changeTokenFactory, () =>
-                     {
-                         return isServiceEnabled;
+                         })
+                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseEnabledChecker(() =>
+                         {
+                             return isServiceEnabled;
+                         });
                      });
 
                  });
@@ -363,11 +386,14 @@ namespace Tests
                          a.IsEnabled = isServiceEnabled;
                      });
 
-                     services.AddOptionsEnabledHostedService<MockHostedService, TestOptions>(
-                         sp => mockedService,
-                         options =>
+                     services.AddEnabledHostedService<MockHostedService>(
+                         a =>
                          {
-                             return options.IsEnabled;
+                             a.UseServiceFactory(sp => mockedService)
+                             .UseOptionsMonitor<MockHostedService, TestOptions>(options =>
+                             {
+                                 return options.IsEnabled;
+                             });
                          });
                  });
 

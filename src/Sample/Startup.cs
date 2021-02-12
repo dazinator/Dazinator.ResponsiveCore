@@ -26,11 +26,12 @@ namespace Sample
             // Bind config options for hosted service that can be start / stopped via config change
             services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
 
-            services.AddOptionsEnabledHostedService<HostedService, HostedServiceOptions>(
-                       shouldBeRunning: options =>
-                       {
-                           return options.Enabled;
-                       });
+            services.AddEnabledHostedService<HostedService>(o =>
+                        o.UseOptionsMonitor<HostedService, HostedServiceOptions>(
+                            options =>
+                            {
+                                return options.Enabled;
+                            }));
         }
 
 

@@ -119,15 +119,19 @@ You don't have to use the `Options` pattern for this, but this is the pattern I'
 
 and
 
-```
-services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
+```csharp
+    services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
 ```
 
-3. Replace your call to `services.AddHostedService` with  `AddOptionsEnabledHostedService`:
+3. Replace your call to `services.AddHostedService` with  `AddEnabledHostedService`:
 
-```
- services.AddOptionsEnabledHostedService<YourHostedService, HostedServiceOptions>(
-                       shouldBeRunning: options => options.Enabled);
+```csharp
+    services.AddEnabledHostedService<HostedService>(o =>
+                o.UseOptionsMonitor<HostedService, HostedServiceOptions>(
+                    options =>
+                    {
+                        return options.Enabled;
+                    }));
 
 ```
 
@@ -135,8 +139,9 @@ services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService
 
 ### I don't want to use the Options pattern
 
-You can use the `services.AddEnabledHostedService` method and its overloads which let you supply your own `IChangeToken`s for triggering when a change to the enablement state has been made, and your own `Func<bool>` that will be invoked for returning what that current status is. 
-Based on these two things the service will respond accordingly.
-           
+When calling `AddEnabledHostedService` you are supplied a builder, `UseOptionsMonitor` is one extension method that makes controlling the enabled state of the service via an options class easy.
+You don't have to use that, you can directly set various properties that will control:
+- How an `IChangeToken` is supplied that can used to invalidate the current status, so that a new status check happens.
+- A delegate used to obtain the new enabled status for the service. This is invoked whenever the `IChangeToken` is singalled. Based on the returned value, and the current status of the service, the service may stop or start accordingly.    
 
 
