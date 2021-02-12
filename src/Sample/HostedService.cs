@@ -11,7 +11,7 @@ namespace Sample
 
         public HostedService(ILogger<HostedService> logger)
         {
-            _logger = logger;            
+            _logger = logger;
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {

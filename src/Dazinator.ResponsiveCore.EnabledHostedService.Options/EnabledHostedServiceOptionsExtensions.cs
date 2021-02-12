@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -92,6 +92,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
         }
         #endregion Options Pattern
- 
+
     }
 }

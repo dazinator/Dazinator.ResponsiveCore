@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 using Dazinator.Extensions.Hosting.EnabledHostedService;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
