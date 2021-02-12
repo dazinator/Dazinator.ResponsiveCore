@@ -1,5 +1,5 @@
 ﻿using System;
-using Dazinator.AspNetCore.Builder.ReloadablePipeline;
+using Dazinator.ResponsiveCore.ReloadablePipeline;
 using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.AspNetCore.Builder

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
+namespace Dazinator.ResponsiveCore.ReloadablePipeline
 {
     public class ReloadPipelineMiddleware
     {

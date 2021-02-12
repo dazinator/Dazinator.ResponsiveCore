@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
+namespace Dazinator.ResponsiveCore.ReloadablePipeline
 {
     /// <summary>
     /// Builds a new <see cref="RequestDelegate"/> in line with an Invalidate() call, within a lock, and then swaps it out for the next request. This means requests for the current RequestDelegate wont be interupted, and once the new one is available, the next request will return it, with no locks on get.

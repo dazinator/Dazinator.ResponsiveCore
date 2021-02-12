@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
+namespace Dazinator.ResponsiveCore.ReloadablePipeline
 {
     /// <summary>
     /// Lazily builds a <see cref="RequestDelegate"/> on demand the first time its requested, in-line with the caller.

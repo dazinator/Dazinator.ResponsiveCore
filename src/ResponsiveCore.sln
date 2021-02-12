@@ -22,11 +22,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline.Options"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{982977A5-6490-4F77-8A3F-4145D17918E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService", "Dazinator.ResponsiveCore.EnabledHostedService\EnabledHostedService.csproj", "{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnabledHostedService.Options", "Dazinator.ResponsiveCore.EnabledHostedService.Options\EnabledHostedService.Options.csproj", "{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService.Options", "Dazinator.ResponsiveCore.EnabledHostedService.Options\EnabledHostedService.Options.csproj", "{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

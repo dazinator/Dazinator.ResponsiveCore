@@ -1,4 +1,4 @@
-﻿namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
+﻿namespace Dazinator.ResponsiveCore.ReloadablePipeline
 {
     public static class DefaultRebuildStrategy
     {

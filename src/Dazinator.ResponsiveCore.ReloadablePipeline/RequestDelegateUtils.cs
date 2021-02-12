@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Dazinator.AspNetCore.Builder.ReloadablePipeline
+namespace Dazinator.ResponsiveCore.ReloadablePipeline
 {
     public abstract class RequestDelegateUtils
     {

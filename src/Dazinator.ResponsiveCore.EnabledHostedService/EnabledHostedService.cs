@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 
-namespace Dazinator.Extensions.Hosting.EnabledHostedService
+namespace Dazinator.ResponsiveCore.EnabledHostedService
 {
     public class EnabledHostedService<TInner> : IHostedService, IDisposable
     where TInner : IHostedService

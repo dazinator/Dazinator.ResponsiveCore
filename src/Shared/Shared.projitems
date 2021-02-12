@@ -9,7 +9,7 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokenFactoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\ChangeTokenFactoryHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\ChangeTokenHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Debouncer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FuncUtils.cs" />

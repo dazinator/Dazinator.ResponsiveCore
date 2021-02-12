@@ -1,6 +1,5 @@
 ﻿using System;
-using Dazinator.Extensions.Hosting.EnabledHostedService;
-using Microsoft.Extensions.DependencyInjection;
+using Dazinator.ResponsiveCore.EnabledHostedService;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 
