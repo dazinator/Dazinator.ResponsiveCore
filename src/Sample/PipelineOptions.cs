@@ -1,4 +1,4 @@
-namespace Server
+namespace Sample
 {
     public class PipelineOptions
     {

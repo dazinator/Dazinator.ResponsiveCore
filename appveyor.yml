@@ -4,6 +4,7 @@ image: Visual Studio 2019 Preview
 install:
   - cmd: choco install gitversion.portable --version 5.0.1 -y
   - cmd: choco install dotnetcore-sdk --version 3.1.101 -y
+  - cmd: choco install dotnet-sdk --version 5.0.102 -y
 
 before_build:
   - ps: gitversion /l console /output buildserver

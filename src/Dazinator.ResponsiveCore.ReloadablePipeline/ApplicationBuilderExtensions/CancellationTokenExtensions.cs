@@ -1,64 +1,68 @@
 ﻿using System;
+using System.Threading;
 using Dazinator.AspNetCore.Builder.ReloadablePipeline;
+using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.AspNetCore.Builder
 {
-
     /// <summary>
-    /// Provides extension methods that build on top of <see cref="ChangeTokenExtensions"/> and provide support for using callback registerations to signal reload.
+    /// Provides addtional extension methods that build on top of <see cref="ChangeTokenExtensions"/> and provide support for using <see cref="CancellationToken"/>s to signal reload.
     /// </summary>
-    public static class CallbackRegistrationExtensions
+    public static class CancellationTokenExtensions
     {
+
         /// <summary>
-        /// Uses <see cref="ReloadPipelineMiddleware"/> in the pipeline which allows you to build a section of pipeline that can be optionally invalidated & reloaded at runtime.
+        /// Uses <see cref="ReloadPipelineMiddleware"/> in the pipeline which allows you to trigger reload of a section of pipeline at runtime based on a <see cref="CancellationToken"/> being supplied and signalled.
         /// </summary>
         /// <param name="builder"></param>
-        ///<param name="registerListener">Function that will be invoked to register a callback, that should then be invoked whenever a change occurs that should trigger a reload. It should return an <see cref="IDisposable"/> that will remove the registration when the caller disposes of it, in order to stop being notifified / destroy the subscription.</param>
+        ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline(this IApplicationBuilder builder,
-            Func<Action, IDisposable> registerListener,
+            Func<CancellationToken> getCancellationToken,
             Action<IApplicationBuilder> configure,
              IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, registerListener, configure, false, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, false, rebuildStrategy);
         }
 
         /// <summary>
-        /// Runs <see cref="ReloadPipelineMiddleware"/> in the pipeline which allows you to build a section of pipeline that can be optionally invalidated & reloaded at runtime.
+        /// Runs <see cref="ReloadPipelineMiddleware"/> in the pipeline which allows you to trigger reload of a section of pipeline at runtime based on a <see cref="CancellationToken"/> being supplied and signalled.
         /// </summary>
         /// <param name="builder"></param>
-        ///<param name="registerListener">Function that registers a callback to be invoked when a change occurs, and returns an <see cref="IDisposable"/> that will remove the registration when the caller disposes of it in order to stop being notifified.</param>
+        ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder RunReloadablePipeline(this IApplicationBuilder builder,
-          Func<Action, IDisposable> registerListener,
+          Func<CancellationToken> getCancellationToken,
           Action<IApplicationBuilder> configure,
-          IRebuildStrategy rebuildStrategy = null)
+           IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, registerListener, configure, true, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, getCancellationToken, configure, true, rebuildStrategy);
         }
 
 
+
         /// <summary>
-        /// Adds <see cref="ReloadPipelineMiddleware"/> to the middleware pipeline, with a change token to invalidate it and rebuild it.
+        /// Adds <see cref="ReloadPipelineMiddleware"/> to the middleware pipeline, with a factory method that can supply a <see cref="CancellationToken"/> that can be used to invalidate it and cause a reload.
         /// </summary>
         /// <param name="builder"></param>
-        ///<param name="registerListener">Function that registers a callback to be invoked when a change occurs, and returns an <see cref="IDisposable"/> that will remove the registration when the caller disposes of it in order to stop being notifified.</param>
+        ///<param name="getCancellationToken">Function that returns a cancellation token that will be signalled when the pipeline needs to be reloaded.</param>
         /// <param name="configure"></param>
         /// <param name="isTerminal"></param>
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder AddReloadablePipelineMiddleware(this IApplicationBuilder builder,
-            Func<Action, IDisposable> registerListener,
+            Func<CancellationToken> getCancellationToken,
             Action<IApplicationBuilder> configure,
             bool isTerminal,
-            IRebuildStrategy rebuildStrategy)
+             IRebuildStrategy rebuildStrategy)
         {
-            var changeTokenFactory = ChangeTokenFactoryHelper.UseCallbackRegistrations(registerListener);
+            var changeTokenFactory = ChangeTokenFactoryHelper.UseCancellationTokens(getCancellationToken);
             return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal, rebuildStrategy);
         }
+
     }
 }

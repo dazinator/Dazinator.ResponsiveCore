@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Server
+namespace Sample
 {
     public class Startup
     {
@@ -20,8 +20,17 @@ namespace Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var configSection = Configuration.GetSection("Pipeline");
-            services.Configure<PipelineOptions>(configSection);
+            // Bind config options for reloadable pipeline
+            services.Configure<PipelineOptions>(Configuration.GetSection("Pipeline"));
+
+            // Bind config options for hosted service that can be start / stopped via config change
+            services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
+
+            services.AddOptionsEnabledHostedService<HostedService, HostedServiceOptions>(
+                       shouldBeRunning: options =>
+                       {
+                           return options.Enabled;
+                       });
         }
 
 

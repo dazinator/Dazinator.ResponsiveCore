@@ -1,12 +1,18 @@
 ## Features
 
-Build middleware pipelines that can be reloaded at runtime - when a changes are detected.
+`ResponsiveCore` provides features to enable your .net core applications to be more responsive to changes at runtime, so you don't have to restart the application in order for changes to take effect. 
+It does this whilst trying to be as minimally invasive in your code base as possible.
 
+Features:
+
+- Middleware: Define middleware pipelines that can be dynamically reloaded / rebuilt from latest config at runtime, without dropping requests.
+- Background Services: Allow your existing `IHostedService`s to be dynamically started and stopped based on your own logic to determine whether they should be currently enabled or not.
+|
 [![Build Status](https://dev.azure.com/darrelltunnell/Public%20Projects/_apis/build/status/dazinator.Dazinator.AspNetCore.Builder.ReloadablePipeline?branchName=develop)](https://dev.azure.com/darrelltunnell/Public%20Projects/_build/latest?definitionId=13&branchName=develop)
 
-## Example
+## Reloadable Middleware Pipelines
 
-1. Add the `Dazinator.AspNetCore.Builder.ReloadablePipeline.Options` nuget package to your project.
+1. Add the `Dazinator.ResponsiveCore.ReloadablePipeline.Options` nuget package to your project.
 2. Configure an `Options` class, and then build a middleware pipeline that from it that will be rebuilt whenever `IOptionsMonitor` detects a change:
  
 ```csharp
@@ -67,7 +73,7 @@ Build middleware pipelines that can be reloaded at runtime - when a changes are 
 
 ```
 
-## How do I signal the pipeline to rebuild for other sorts of changes - for example a button click?
+### How do I signal the pipeline to rebuild for other sorts of changes - for example a button click?
 
 The extension methods provided in `Dazinator.AspNetCore.Builder.ReloadablePipeline.Options` package is just a thin wrapper around the core extension methods which are designed to work with a more generic `IChangeToken` concept.
 These core api's are in the `Dazinator.AspNetCore.Builder.ReloadablePipeline` nuget package.
@@ -75,7 +81,7 @@ You can use / run the middleware passing in a `Func<IChangeToken>` which can sup
 
 You can also supply your own cancellation tokens for a pipeline, see the sample for a demonstration of that: https://github.com/dazinator/Dazinator.AspNetCore.Builder.ReloadablePipeline/blob/master/src/Sample/Startup.cs
 
-## Rebuild Strategies
+### Rebuild Strategies
 
 The default strategy for pipeline rebuilds, is to rebuild it within a lock at the point its invalidated. 
 Once the new pipeline has been build, the new instance is swapped in for the old instance (no locking), and new requests are now pushed through the new instance of the pipeline instead of the old.
@@ -89,3 +95,48 @@ To override the default strategy, pass in an `IRebuildStrategy` as the last opti
 
 
 ```
+
+## Enabled Hosted Services
+
+Suppose you have an `IHostedService` that you want to be able to disable or enable at runtime.
+
+When the service is "enabled" it should be running. When it is disabled, it should be stopped.
+
+You can do this without any code changes to your service itself.
+
+You don't have to use the `Options` pattern for this, but this is the pattern I'll promote for this example.
+
+1. Add the `Dazinator.ResponsiveCore.EnabledHostedService.Options` package to your project.
+
+2. Create an `Options` class that you can then bind to config to represent whether the service is enabled or disabled.
+
+```csharp
+    public class HostedServiceOptions
+    {
+        public bool Enabled { get; set; }
+    }
+```
+
+and
+
+```
+services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
+```
+
+3. Replace your call to `services.AddHostedService` with  `AddOptionsEnabledHostedService`:
+
+```
+ services.AddOptionsEnabledHostedService<YourHostedService, HostedServiceOptions>(
+                       shouldBeRunning: options => options.Enabled);
+
+```
+
+4. Start your application with that config setting as `false`. Your service will not start. Whilst the application is running, change the config to be `true` and save that change. The change is detected and your service will now start. Again, whilst your application is running, change the config back to `false` - your service will be stopped. Repeat this ad infinitum - if you have the time, all the while basking in the glory of this responsivity.
+
+### I don't want to use the Options pattern
+
+You can use the `services.AddEnabledHostedService` method and its overloads which let you supply your own `IChangeToken`s for triggering when a change to the enablement state has been made, and your own `Func<bool>` that will be invoked for returning what that current status is. 
+Based on these two things the service will respond accordingly.
+           
+
+

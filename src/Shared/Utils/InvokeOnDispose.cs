@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dazinator.AspNetCore.Builder.ReloadablePipeline.Utils
+﻿namespace System
 {
     public class InvokeOnDispose : IDisposable
     {
