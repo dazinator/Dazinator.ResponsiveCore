@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.Primitives
         /// <param name="cancellationTokenFactory"></param>
         /// <returns></returns>
         public static Func<IChangeToken> UseCancellationTokens(Func<CancellationToken> cancellationTokenFactory)
-        {
+        {           
             return cancellationTokenFactory.Convert(token => new CancellationChangeToken(token));
         }
 

@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <PackageId>Dazinator.AspNetCore.Builder.ReloadablePipeline.Options</PackageId>
+        <PackageId>Dazinator.ResponsiveCore.ReloadablePipeline.Options</PackageId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Dazinator.AspNetCore.Builder.ReloadablePipeline\ReloadablePipeline.csproj" />
+        <ProjectReference Include="..\Dazinator.ResponsiveCore.ReloadablePipeline\ReloadablePipeline.csproj" />
     </ItemGroup>
 
 </Project>

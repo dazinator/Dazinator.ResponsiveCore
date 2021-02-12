@@ -1,11 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace System
+﻿namespace System
 {
     public static class FuncUtils
     {
-
-
 
         /// <summary>
         /// Creates a factory that can be used concurrently to obtain <typeparamref name="TDisposable"/> instances, but will only keep the latest one alive, and will dispose of previous instances when the latest one is requested.

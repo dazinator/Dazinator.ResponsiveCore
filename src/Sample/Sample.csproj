@@ -8,7 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dazinator.AspNetCore.Builder.ReloadablePipeline.Options\ReloadablePipeline.Options.csproj" />
+      <ProjectReference Include="..\Dazinator.ResponsiveCore.EnabledHostedService.Options\EnabledHostedService.Options.csproj" />
+      <ProjectReference Include="..\Dazinator.ResponsiveCore.ReloadablePipeline.Options\ReloadablePipeline.Options.csproj" />
     </ItemGroup>
+
+    
 
 </Project>

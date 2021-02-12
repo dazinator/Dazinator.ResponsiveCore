@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HostedService\HostedService.csproj" />
+    <ProjectReference Include="..\Dazinator.ResponsiveCore.EnabledHostedService.Options\EnabledHostedService.Options.csproj" />
   </ItemGroup>
 
 </Project>
