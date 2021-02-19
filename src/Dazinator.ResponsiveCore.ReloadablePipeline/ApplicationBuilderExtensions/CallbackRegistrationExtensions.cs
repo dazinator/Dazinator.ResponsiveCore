@@ -58,7 +58,7 @@ namespace Microsoft.AspNetCore.Builder
             bool isTerminal,
             IRebuildStrategy rebuildStrategy)
         {
-            var changeTokenFactory = ChangeTokenFactoryHelper.UseCallbackRegistrations(registerListener);
+            var changeTokenFactory = ChangeTokenFactoryHelper.CreateChangeTokenFactory(registerListener);
             return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal, rebuildStrategy);
         }
     }

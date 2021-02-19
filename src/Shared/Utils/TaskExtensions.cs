@@ -1,4 +1,7 @@
 ﻿
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Primitives;
+
 namespace System.Threading.Tasks
 {
     public static class TaskExtensions
@@ -31,4 +34,5 @@ namespace System.Threading.Tasks
             }
         }
     }
+
 }

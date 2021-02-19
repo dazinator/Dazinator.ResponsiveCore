@@ -60,6 +60,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
+
         /// <summary>
         /// Set the delegate to be used to check the status of the service. The delegate returns the desired enablement state for the service - i.e whether the service should be enabled or not. 
         /// If the delegate returns true, it means the service should be enabled. If it is not currently running it will be started.

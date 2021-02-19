@@ -415,8 +415,75 @@ namespace Tests
         }
 
 
+        [Fact]
+        public async Task EnabledService_CanBeRegistered_UsingEventHandlerListener()
+        {
+
+            bool startCalled = false;
+            bool stopCalled = false;
+            bool isServiceEnabled = true;
+
+            var mockedService = new MockHostedService(
+                         onStartAsync: async (cancelToken) =>
+                         {
+                             startCalled = true;
+                         },
+                        onStopAsync: async (cancelToken) =>
+                        {
+                            stopCalled = true;
+                        });
+
+            var classWithEvent = new TestClassWithAnEvent();
+            IDisposable eventSubscription = null;
+
+            string[] args = null;
+            var host = Host.CreateDefaultBuilder(args)
+                 .ConfigureServices(services =>
+                 {
+                     services.AddSingleton<TestClassWithAnEvent>(classWithEvent);
+
+                     services.AddEnabledHostedService<MockHostedService>(
+                         a =>
+                         {
+                             a.UseServiceFactory(sp => mockedService)
+                             .UseChangeTokenFactory((sp) =>
+                             {
+                                 return ChangeTokenFactoryHelper.CreateChangeTokenFactoryUsingEventHandler<string>(
+                                     addHandler: (handler) => classWithEvent.SomeEvent += handler,
+                                     removeHandler: (handler) => classWithEvent.SomeEvent -= handler,
+                                     out eventSubscription);
+                             })
+                             .UseEnabledChecker(() => isServiceEnabled);
+                         });
+                 });
+
+            var result = await host.StartAsync();
+            Assert.True(startCalled);
+            Assert.False(stopCalled);
+
+            // Now we want the service to be stopped when we change the enabled state to false, and trigger the change token.
+            startCalled = false;
+            isServiceEnabled = false;
+            classWithEvent.RaiseEvent();
+            // give some time for the service to respond and stop itslef.
+            await Task.Delay(2000);
+            Assert.False(startCalled);
+            Assert.True(stopCalled);
+        }
+
+
+
     }
 
+    public class TestClassWithAnEvent
+    {
+        public event EventHandler<string> SomeEvent;
+
+        public void RaiseEvent()
+        {
+            SomeEvent?.Invoke(this, "Fired");
+        }
+    }
 
 
 

@@ -15,5 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FuncUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\InvokeOnDispose.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\TaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\TriggerChangeToken.cs" />
   </ItemGroup>
 </Project>

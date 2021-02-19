@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
             options.UseChangeTokenFactory(sp =>
             {
                 var monitor = sp.GetRequiredService<IOptionsMonitor<TOptions>>();
-                var changeTokenFactory = ChangeTokenFactoryHelper.UseCallbackRegistrations((onChangedCallback) =>
+                var changeTokenFactory = ChangeTokenFactoryHelper.CreateChangeTokenFactory((onChangedCallback) =>
                 {
                     return monitor.OnChange(a => onChangedCallback());
                 });
@@ -54,4 +54,6 @@ namespace Microsoft.Extensions.DependencyInjection
             return options;
         }
     }
+
+
 }

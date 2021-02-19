@@ -1,4 +1,6 @@
-﻿namespace System
+﻿using System.Threading;
+
+namespace System
 {
     public static class FuncUtils
     {
@@ -10,24 +12,17 @@
         /// <param name="factory"></param>
         /// <returns></returns>
         public static Func<TDisposable> KeepLatest<TDisposable>(Func<TDisposable> factory, Action<TDisposable> onNewInstance = null)
-    where TDisposable : IDisposable
+    where TDisposable : class, IDisposable
         {
             TDisposable lastOne = default;
-            var _lock = new object();
-
             Func<TDisposable> lastOneFactory = () =>
             {
                 // only one thread should dispose or previos and intialise new source.
-                lock (_lock)
-                {
-                    if (lastOne != null)
-                    {
-                        lastOne.Dispose();
-                    }
-                    lastOne = factory.Invoke();
-                    onNewInstance?.Invoke(lastOne);
-                    return lastOne;
-                }
+                var newOne = factory.Invoke();
+                var previous = Interlocked.Exchange(ref lastOne, newOne);
+                previous?.Dispose();
+                onNewInstance?.Invoke(newOne);
+                return newOne;
             };
             return lastOneFactory;
         }
@@ -39,7 +34,7 @@
         /// <param name="factory"></param>
         /// <returns></returns>
         public static Func<TDisposable> KeepLatest<TDisposable>(Action<TDisposable> onNewInstance = null)
-    where TDisposable : IDisposable, new()
+    where TDisposable : class, IDisposable, new()
         {
             return KeepLatest<TDisposable>(() => new TDisposable(), onNewInstance);
         }

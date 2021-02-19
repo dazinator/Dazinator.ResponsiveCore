@@ -60,7 +60,7 @@ namespace Microsoft.AspNetCore.Builder
             bool isTerminal,
              IRebuildStrategy rebuildStrategy)
         {
-            var changeTokenFactory = ChangeTokenFactoryHelper.UseCancellationTokens(getCancellationToken);
+            var changeTokenFactory = ChangeTokenFactoryHelper.CreateChangeTokenFactory(getCancellationToken);
             return ChangeTokenExtensions.AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, isTerminal, rebuildStrategy);
         }
 

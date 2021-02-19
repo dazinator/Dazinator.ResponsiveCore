@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Primitives
         /// </summary>
         /// <param name="cancellationTokenFactory"></param>
         /// <returns></returns>
-        public static Func<IChangeToken> UseCancellationTokens(Func<CancellationToken> cancellationTokenFactory)
+        public static Func<IChangeToken> CreateChangeTokenFactory(this Func<CancellationToken> cancellationTokenFactory)
         {
             return cancellationTokenFactory.Convert(token => new CancellationChangeToken(token));
         }
@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.Primitives
         /// </summary>
         /// <param name="registerListener"></param>
         /// <returns></returns>
-        public static Func<IChangeToken> UseCallbackRegistrations(Func<Action, IDisposable> registerListener)
+        public static Func<IChangeToken> CreateChangeTokenFactory(Func<Action, IDisposable> registerListener)
         {
 
             IDisposable previousRegistration = null;
@@ -48,31 +48,38 @@ namespace Microsoft.Extensions.Primitives
             };
 
             return changeTokenFactory;
-
-            //var changeTokenFactory = FuncUtils.KeepLatest<CancellationTokenSource, IDisposable>(
-            //  (source) =>
-            //  {
-            //      // trigger cancellation when the registered listener is invoked.
-            //      // the disposable represents the registration of the listener, disposing it removes the registration which stops it from listening.
-            //      var disposable = registerListener(() => source.Cancel());
-            //      // Composite dispose of this registration, and the cancellation token when we get disposed.
-            //      var newDisposable = new InvokeOnDispose(() =>
-            //     {
-            //         // Ensure disposal of listener and token source that we created.
-            //         disposable.Dispose();
-            //         source.Dispose();
-            //     });
-            //      return newDisposable;
-            //  })
-            //  .ToAction()
-            //  .ToFunc(new CancellationTokenSource(),
-            //          (cts) => new CancellationChangeToken(cts.Token));
-
-            //return changeTokenFactory;
         }
 
+        /// <summary>
+        /// Creates a factory to produce change tokens that are signalled whenever an event handler is invoked.
+        /// </summary>
+        /// <returns>An <see cref="IDisposable"/></returns> that represents the event handler subscription. Dispose of it to unsubscribe the event handler from the event, which will then cause change tokens to be signalled no longer when the event is raised in future.
+        public static Func<IChangeToken> CreateChangeTokenFactoryUsingEventHandler<TEventArgs>(Action<EventHandler<TEventArgs>> addHandler, Action<EventHandler<TEventArgs>> removeHandler, out IDisposable subscription)
+        {
+            TriggerChangeToken currentToken = null;
+            Func<IChangeToken> result = () =>
+              {
+                  // consumer is asking for a new token, any previous token is dead.                
+                  var previous = Interlocked.Exchange(ref currentToken, new TriggerChangeToken());
+                  previous?.Dispose();
+                  return currentToken;
+              };
+
+            EventHandler<TEventArgs> triggerChangeTokenHandler = (a, e) =>
+             {
+                 currentToken?.Trigger();
+             };
+            addHandler(triggerChangeTokenHandler);
+            //eventHandler += triggerChangeTokenHandler;
+            subscription = new InvokeOnDispose(() =>
+            {
+                removeHandler(triggerChangeTokenHandler);
+                //  eventHandler -= triggerChangeTokenHandler;
+
+            });
+
+            return result;
+        }
     }
-
-
 
 }
