@@ -1,9 +1,11 @@
+using System;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Sample
 {
@@ -27,11 +29,18 @@ namespace Sample
             services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
 
             services.AddEnabledHostedService<HostedService>(o =>
-                        o.UseOptionsMonitor<HostedService, HostedServiceOptions>(
-                            options =>
-                            {
-                                return options.Enabled;
-                            }));
+            {
+                o.UseChangeTokenFactory((sp, b) =>
+                {
+                    var monitor = sp.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
+                    b.IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
+                })
+                .UseEnabledChecker(sp =>
+                {
+                    var monitor = sp.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
+                    return () => monitor.CurrentValue?.Enabled ?? false;
+                });
+            });
         }
 
 
@@ -41,25 +50,28 @@ namespace Sample
             // Note: UseReloadablePipeline vs RunReloadablePipeline (latter is terminal, former is not).
 
             // make a change to appsettings.json "Pipelines" section and watch log output in console on furture requests.
-            app.UseReloadablePipeline<PipelineOptions>((builder, options) => ConfigureReloadablePipeline(builder, env, options));
+            app.UseReloadablePipeline((changeTokenBuilder) =>
+            {
+                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
+                changeTokenBuilder
+                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
+            },
+            configure: (appBuilder) =>
+            {
+                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
+                ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
+            });
+
+
+            Action triggerReload = null;
 
             // Demonstrates another reloadable middleware pipeline that is reloaded by triggering a cancellation token.
             app.Map("/specialpipeline", (builder) =>
             {
                 // Using extension method that allows a cancellation token to be supplied to trigger reload.
-                builder.RunReloadablePipeline(() =>
+                builder.RunReloadablePipeline((changeTokenBuilder) =>
                 {
-                    var existingCts = SpecialPipelineManualCancellationTokenSource;
-                    if (existingCts != null)
-                    {
-                        existingCts.Dispose();
-                        existingCts = null;
-                    }
-
-                    var cts = new CancellationTokenSource();
-                    // capture reference to it so we can later trigger this pipeline to rebuild.
-                    SpecialPipelineManualCancellationTokenSource = cts;
-                    return cts.Token;
+                    changeTokenBuilder.IncludeTrigger(out triggerReload);
                 }, (subBuilder) =>
                 {
                     var logger = subBuilder.ApplicationServices.GetRequiredService<ILogger<Startup>>();
@@ -75,7 +87,7 @@ namespace Sample
             {
                 builder.Use(async (http, onNext) =>
                 {
-                    SpecialPipelineManualCancellationTokenSource?.Cancel();
+                    triggerReload?.Invoke();
                     await onNext();
                 });
 
@@ -83,8 +95,6 @@ namespace Sample
 
             app.UseWelcomePage();
         }
-
-        public CancellationTokenSource SpecialPipelineManualCancellationTokenSource { get; set; }
 
 
         private void ConfigureReloadablePipeline(IApplicationBuilder appBuilder, IWebHostEnvironment environment, PipelineOptions options)

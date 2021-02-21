@@ -15,7 +15,8 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="configure"></param>
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
-        public static IApplicationBuilder UseReloadablePipeline(this IApplicationBuilder builder,
+        public static IApplicationBuilder UseReloadablePipeline(
+            this IApplicationBuilder builder,
            Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
            Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
         {
