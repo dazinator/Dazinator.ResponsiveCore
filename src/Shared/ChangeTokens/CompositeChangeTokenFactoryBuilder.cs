@@ -285,6 +285,54 @@ namespace Microsoft.Extensions.Primitives
         }
 
 
+        /// <summary>
+        /// Include a change token that will be triggered whenever an event handler is invoked.
+        /// A callback is called when the first change token is requested, for you to register the event handler.
+        /// A disposable is also provided via a callback, and should be disposed to remove the event handler and stop listening for changes.
+        /// </summary>
+        public CompositeChangeTokenFactoryBuilder IncludeEventHandlerTrigger<TEventArgs>(
+            Action<EventHandler<TEventArgs>> addHandler,
+            Action<EventHandler<TEventArgs>> removeHandler,
+            Action<IDisposable> handlerLifetime)
+        {
+            TriggerChangeToken currentToken = null;
+            EventHandler<TEventArgs> triggerChangeTokenHandler = (a, e) =>
+            {
+                currentToken?.Trigger();
+            };
+
+            Lazy<IDisposable> subscription = new Lazy<IDisposable>(() => {
+
+                addHandler(triggerChangeTokenHandler);
+                return new InvokeOnDispose(() =>
+                {
+                    removeHandler(triggerChangeTokenHandler);
+                });
+            });
+
+            Func<IChangeToken> factory = () =>
+            {
+                // deliberately capture a reference to the disposable subscription representing the event handler.
+                // lazy initialise it when first token requested - will attach the event handler.
+                // When this factory falls out of scope, the reference to the IDisposable is lost
+
+                // and gets collected.
+                if(!subscription.IsValueCreated)
+                {
+                    _ = subscription.Value;
+                    handlerLifetime(subscription.Value);
+                }
+                // consumer is asking for a new token, any previous token is dead.                
+                var previous = Interlocked.Exchange(ref currentToken, new TriggerChangeToken());
+                previous?.Dispose();
+                return currentToken;
+            };
+           
+            Factories.Add(factory);
+            return this;
+        }
+
+
         // IncludeResubscribingTrigger
 
         // .Include(()=>new MyChangeToken())      

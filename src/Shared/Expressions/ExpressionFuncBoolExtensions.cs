@@ -1,9 +1,17 @@
-﻿namespace System.Linq.Expressions
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+
+namespace System.Linq.Expressions
 {
+
     public static class ExpressionFuncBoolExtensions
     {
         public static Expression<Func<bool>> True() { return () => true; }
         public static Expression<Func<bool>> False() { return () => false; }
+
+        public static Expression<Func<bool>> BooleanValue(bool value) { return () => value; }
 
         public static Expression<Func<bool>> OrElse(this Expression<Func<bool>> expr1,
                                                             Expression<Func<bool>> expr2)

@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Expressions\ExpressionFuncBoolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Expressions\FuncBoolBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\CompositeChangeTokenFactoryBuilder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\ChangeTokenFactoryHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\ChangeTokenDebouncer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Debouncer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\EmptyChangeToken.cs" />
@@ -24,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\TriggerChangeToken.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Expressions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Disposables\" />
     <Folder Include="$(MSBuildThisFileDirectory)Tasks\" />
   </ItemGroup>

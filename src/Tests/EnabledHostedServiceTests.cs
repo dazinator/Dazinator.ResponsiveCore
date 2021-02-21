@@ -453,12 +453,12 @@ namespace Tests
                          a =>
                          {
                              a.UseServiceFactory(sp => mockedService)
-                             .UseChangeTokenFactory((sp) =>
+                             .UseChangeTokenFactory((sp, builder) =>
                              {
-                                 return ChangeTokenFactoryHelper.CreateChangeTokenFactoryUsingEventHandler<string>(
+                                 builder.IncludeEventHandlerTrigger<string>(
                                      addHandler: (handler) => classWithEvent.SomeEvent += handler,
                                      removeHandler: (handler) => classWithEvent.SomeEvent -= handler,
-                                     out eventSubscription);
+                                     (disposable) => eventSubscription = disposable);
                              })
                              .UseEnabledChecker(() => isServiceEnabled);
                          });
@@ -468,10 +468,10 @@ namespace Tests
             Assert.True(startCalled);
             Assert.False(stopCalled);
 
-            // Now we want the service to be stopped when we change the enabled state to false, and trigger the change token.
-            startCalled = false;
+            // Now we want the service to be stopped
             isServiceEnabled = false;
-            classWithEvent.RaiseEvent();
+            startCalled = false;
+            classWithEvent.RaiseEvent(true);
             // give some time for the service to respond and stop itslef.
             await Task.Delay(2000);
             Assert.False(startCalled);
@@ -479,15 +479,82 @@ namespace Tests
         }
 
 
+        [Fact]
+        public async Task EnabledService_CanUseCompositeFuncBool_ServiceNotStartedUntilCompositeTrue()
+        {
+
+            bool startCalled = false;
+            bool stopCalled = false;
+
+            var mockedService = new MockHostedService(
+                         onStartAsync: async (cancelToken) =>
+                         {
+                             startCalled = true;
+                         },
+                        onStopAsync: async (cancelToken) =>
+                        {
+                            stopCalled = true;
+                        });
+
+            var classWithEvent = new TestClassWithAnEvent();
+            IDisposable eventSubscription = null;
+
+            string[] args = null;
+            var host = Host.CreateDefaultBuilder(args)
+                 .ConfigureServices(services =>
+                 {
+                     services.AddSingleton<TestClassWithAnEvent>(classWithEvent);
+
+                     services.AddEnabledHostedService<MockHostedService>(
+                         a =>
+                         {
+                             a.UseServiceFactory(sp => mockedService)
+                             .UseChangeTokenFactory((sp, builder) =>
+                             {
+                                 builder.IncludeEventHandlerTrigger<string>(
+                                     addHandler: (handler) => classWithEvent.SomeEvent += handler,
+                                     removeHandler: (handler) => classWithEvent.SomeEvent -= handler,
+                                     (disposable) => eventSubscription = disposable);
+                             })
+                             .UseEnabledChecker((sp, b) =>
+                             {
+                                 b.Initial(true)
+                                  .AndAlso(() => sp.GetRequiredService<TestClassWithAnEvent>().IsServiceEnabled);
+
+                             });
+
+                         });
+                 });
+
+            var result = await host.StartAsync();
+            Assert.False(startCalled);
+            Assert.False(stopCalled);
+
+            // Now we want the service to be stopped when we change the enabled state to false, 
+            // and trigger the change token.
+            startCalled = false;
+            classWithEvent.RaiseEvent(true); // the Func<bool> should now evaluate to true causing service to start.
+            // give some time for the service to respond and stop itslef.
+            await Task.Delay(2000);
+            Assert.True(startCalled);
+            Assert.False(stopCalled);
+        }
 
     }
 
     public class TestClassWithAnEvent
     {
+        public bool IsServiceEnabled
+        {
+            get;
+            private set;
+        } = false;
+
         public event EventHandler<string> SomeEvent;
 
-        public void RaiseEvent()
+        public void RaiseEvent(bool isServiceEnabled)
         {
+            IsServiceEnabled = isServiceEnabled;
             SomeEvent?.Invoke(this, "Fired");
         }
     }

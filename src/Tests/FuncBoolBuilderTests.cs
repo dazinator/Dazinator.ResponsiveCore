@@ -14,10 +14,12 @@ namespace Tests
         public void FuncBoolBuilder_OrElse(bool first, bool second, bool expectedResult)
         {
             // True or else False =-
-            var result = FuncBoolBuilder
-                            .Create(() => first)
-                            .OrElse(() => second)
-                            .Build();
+            var result = FuncBoolBuilder.Build((builder) =>
+            {
+                builder.Initial(() => first)
+                       .OrElse(() => second);
+            });
+
             Assert.Equal(expectedResult, result());
         }
 
@@ -30,9 +32,12 @@ namespace Tests
         {
             // True or else False =-
             var result = FuncBoolBuilder
-                            .Create(() => first)
-                            .AndAlso(() => second)
-                            .Build();
+                            .Build((builder) =>
+                            {
+                                builder.Initial(first)
+                                       .AndAlso(() => second);
+                            });
+
             Assert.Equal(expectedResult, result());
         }
 
@@ -45,12 +50,16 @@ namespace Tests
         {
             // True or else False =-
             var result = FuncBoolBuilder
-                            .Create(() => first)
-                            .AndAlso(sub =>
-                            {
-                                sub.Initial(() => subSecond);
-                            })
-                            .Build();
+                        .Build((builder) =>
+                         {
+                             builder.Initial(first)
+                                    .AndAlso(sub =>
+                                    {
+                                        sub.Initial(() => subSecond);
+                                    });
+                         });
+
+                            
             Assert.Equal(expectedResult, result());
         }
 

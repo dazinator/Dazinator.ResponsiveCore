@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -109,6 +110,25 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IFuncBoolBuilderInitial> buildCallback)
+        {
+            var checkFunc = FuncBoolBuilder.Build((builder) => {
+                buildCallback(builder);
+            });
+
+            IsEnabledDelegateResolver = s => checkFunc;
+            return this;
+        }
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IServiceProvider, IFuncBoolBuilderInitial> buildCallback)
+        {
+            IsEnabledDelegateResolver = s => {
+                var checkFunc = FuncBoolBuilder.Build((builder) => {
+                    buildCallback(s, builder);
+                });
+                return checkFunc;
+            };
+            return this;
+        }
     }
 
 

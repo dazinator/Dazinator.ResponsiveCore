@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
@@ -27,7 +28,7 @@ namespace Tests
         }
 
         [Fact]
-        public async Task Include_ChangeToken()
+        public void Include_ChangeToken()
         {
             var sut = new CompositeChangeTokenFactoryBuilder();
             TriggerChangeToken token = null;
@@ -50,11 +51,50 @@ namespace Tests
             }, null);
 
             token.Trigger();
-            await Task.Delay(200);
+           // await Task.Delay(200);
 
             Assert.NotNull(newToken);
             Assert.NotSame(newToken, original);
         }
+
+        [Fact]
+        public void Include_ManyChangeTokens_SignallingAny_SignalsConsumedToken()
+        {
+            var sut = new CompositeChangeTokenFactoryBuilder();
+
+            var tokensProduced = new List<TriggerChangeToken>();
+
+            var factory = sut.Include(() =>
+            {
+                var token = new TriggerChangeToken();
+                tokensProduced.Add(token);
+                return token;
+            }).Include(() =>
+            {
+                var token = new TriggerChangeToken();
+                tokensProduced.Add(token);
+                return token;
+            }).Build();
+
+            var consumedCompositeToken = factory();
+            Assert.False(consumedCompositeToken.HasChanged);
+            Assert.Equal(2, tokensProduced.Count);
+
+            // When we trigger either token, it signales the composite token 
+            var tokenOne = tokensProduced[0];
+            tokenOne.Trigger();
+            Assert.True(consumedCompositeToken.HasChanged);
+
+            tokensProduced.Clear();
+            consumedCompositeToken = factory();
+            Assert.False(consumedCompositeToken.HasChanged);
+            Assert.Equal(2, tokensProduced.Count);
+
+            var tokenTwo = tokensProduced[1];
+            tokenTwo.Trigger();
+            Assert.True(consumedCompositeToken.HasChanged);      
+        }
+
 
     }
 }
