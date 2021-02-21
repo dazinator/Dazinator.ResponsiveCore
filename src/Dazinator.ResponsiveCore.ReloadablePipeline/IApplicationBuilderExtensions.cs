@@ -4,7 +4,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.AspNetCore.Builder
 {
-    public static class ChangeTokenExtensions
+    public static class IApplicationBuilderExtensions
     {
 
         /// <summary>
@@ -16,10 +16,10 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline(this IApplicationBuilder builder,
-           Func<IChangeToken> changeTokenFactory,
+           Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
            Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, false, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, false, rebuildStrategy);
         }
 
         /// <summary>
@@ -31,11 +31,12 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder RunReloadablePipeline(this IApplicationBuilder builder,
-          Func<IChangeToken> changeTokenFactory,
+          Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
           Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
         {
-            return AddReloadablePipelineMiddleware(builder, changeTokenFactory, configure, true, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, true, rebuildStrategy);
         }
+
 
 
         /// <summary>
@@ -47,8 +48,9 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="isTerminal"></param>
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
-        public static IApplicationBuilder AddReloadablePipelineMiddleware(this IApplicationBuilder builder,
-            Func<IChangeToken> changeTokenFactory,
+        public static IApplicationBuilder AddReloadablePipelineMiddleware(
+            this IApplicationBuilder builder,
+            Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
             Action<IApplicationBuilder> configure,
             bool isTerminal,
             IRebuildStrategy rebuildStrategy = null)
@@ -58,6 +60,10 @@ namespace Microsoft.AspNetCore.Builder
             {
                 rebuildStrategy = DefaultRebuildStrategy.Create();
             }
+
+            var changeTokenFactoryBuilder = new CompositeChangeTokenFactoryBuilder();
+            buildChangeTokens(changeTokenFactoryBuilder);
+            var changeTokenFactory = changeTokenFactoryBuilder.Build();
 
             var factory = new RequestDelegateFactory(changeTokenFactory, rebuildStrategy, (onNext) =>
             {

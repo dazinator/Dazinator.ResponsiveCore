@@ -21,7 +21,7 @@ namespace Dazinator.ResponsiveCore.ReloadablePipeline
         {
             _rebuildStrategy = rebuildStrategy;
             _requestDelegateBuilder = requestDelegateBuilder;
-            _listening = ChangeTokenHelper.OnChangeDebounce(getNewChangeToken, InvokeChanged, delayInMilliseconds: 500);
+            _listening = ChangeTokenDebouncer.OnChangeDebounce(getNewChangeToken, InvokeChanged, delayInMilliseconds: 500);
         }
 
         private void InvokeChanged()

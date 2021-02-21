@@ -60,6 +60,28 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<CompositeChangeTokenFactoryBuilder> configure)
+        {
+            var builder = new CompositeChangeTokenFactoryBuilder();
+            configure(builder);
+            ChangeTokenFactoryResolver = s => builder.Build();
+            return this;
+        }
+
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<IServiceProvider, CompositeChangeTokenFactoryBuilder> configure)
+        {
+            var builder = new CompositeChangeTokenFactoryBuilder();
+            ChangeTokenFactoryResolver = s =>
+            {
+                configure(s, builder);
+                return builder.Build();
+            };
+            return this;
+        }
+
+
+
+
 
         /// <summary>
         /// Set the delegate to be used to check the status of the service. The delegate returns the desired enablement state for the service - i.e whether the service should be enabled or not. 

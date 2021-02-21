@@ -39,7 +39,7 @@ namespace System
             return KeepLatest<TDisposable>(() => new TDisposable(), onNewInstance);
         }
 
-        public static Func<TTarget> Convert<TSource, TTarget>(this Func<TSource> sourceFactory, Func<TSource, TTarget> transformer)
+        public static Func<TTarget> Cast<TSource, TTarget>(this Func<TSource> sourceFactory, Func<TSource, TTarget> transformer)
         {
             Func<TTarget> transformingFunc = () =>
             {

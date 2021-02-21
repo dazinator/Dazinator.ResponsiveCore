@@ -18,15 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline", "Dazinator.ResponsiveCore.ReloadablePipeline\ReloadablePipeline.csproj", "{23E25532-1D9A-4F2F-9FDF-D4D26BBAFC58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline.Options", "Dazinator.ResponsiveCore.ReloadablePipeline.Options\ReloadablePipeline.Options.csproj", "{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{982977A5-6490-4F77-8A3F-4145D17918E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService", "Dazinator.ResponsiveCore.EnabledHostedService\EnabledHostedService.csproj", "{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService.Options", "Dazinator.ResponsiveCore.EnabledHostedService.Options\EnabledHostedService.Options.csproj", "{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -47,10 +43,6 @@ Global
 		{23E25532-1D9A-4F2F-9FDF-D4D26BBAFC58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23E25532-1D9A-4F2F-9FDF-D4D26BBAFC58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23E25532-1D9A-4F2F-9FDF-D4D26BBAFC58}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7DECF40B-4251-4CCC-B80E-710EA48FCB0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,10 +51,6 @@ Global
 		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D50EB19-5764-43E5-85C5-E2E8332ACFA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

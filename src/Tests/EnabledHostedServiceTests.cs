@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
@@ -50,7 +51,7 @@ namespace Tests
 
             var changeTokenFactory = FuncUtils
                                 .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Convert(a => new CancellationChangeToken(a.Token));
+                                .Cast(a => new CancellationChangeToken(a.Token));
             //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = false;
@@ -101,7 +102,7 @@ namespace Tests
 
             var changeTokenFactory = FuncUtils
                                 .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Convert(a => new CancellationChangeToken(a.Token));
+                                .Cast(a => new CancellationChangeToken(a.Token));
             //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = false;
@@ -169,7 +170,7 @@ namespace Tests
                                 {
                                     latestCancellationTokenSource = a;
                                 })
-                                .Convert(a => new CancellationChangeToken(a.Token));
+                                .Cast(a => new CancellationChangeToken(a.Token));
             //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = false;
@@ -244,7 +245,7 @@ namespace Tests
 
             var changeTokenFactory = FuncUtils
                                 .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Convert(a => new CancellationChangeToken(a.Token));
+                                .Cast(a => new CancellationChangeToken(a.Token));
             //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = true;
@@ -300,7 +301,7 @@ namespace Tests
 
             var changeTokenFactory = FuncUtils
                                 .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Convert(a => new CancellationChangeToken(a.Token));
+                                .Cast(a => new CancellationChangeToken(a.Token));
             //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = true;
@@ -390,9 +391,15 @@ namespace Tests
                          a =>
                          {
                              a.UseServiceFactory(sp => mockedService)
-                             .UseOptionsMonitor<MockHostedService, TestOptions>(options =>
+                             .UseChangeTokenFactory((sp, b) =>
                              {
-                                 return options.IsEnabled;
+                                 var monitor = sp.GetRequiredService<IOptionsMonitor<TestOptions>>();
+                                 b.IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
+                             })
+                             .UseEnabledChecker(sp =>
+                             {
+                                 var monitor = sp.GetRequiredService<IOptionsMonitor<TestOptions>>();
+                                 return () => monitor.CurrentValue?.IsEnabled ?? false;
                              });
                          });
                  });

@@ -29,7 +29,7 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
             _inner = inner;
             _changeTokenFactory = changeTokenFactory;
             _shouldBeRunning = shouldBeRunning;
-            _listening = ChangeTokenHelper.OnChangeDebounce(_changeTokenFactory, InvokeChanged, delayInMilliseconds: 500);
+            _listening = ChangeTokenDebouncer.OnChangeDebounce(_changeTokenFactory, InvokeChanged, delayInMilliseconds: 500);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

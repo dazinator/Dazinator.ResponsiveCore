@@ -2,7 +2,7 @@
 
 namespace Microsoft.Extensions.Primitives
 {
-    public static class ChangeTokenHelper
+    public static class ChangeTokenDebouncer
     {
         private const int DefaultDelayInMilliseconds = 500;
 

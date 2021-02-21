@@ -9,12 +9,23 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\ChangeTokenFactoryHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\ChangeTokenHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\Configuration\ConfigurationExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\ExpressionFuncBoolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\FuncBoolBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\CompositeChangeTokenFactoryBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\ChangeTokenFactoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\ChangeTokenDebouncer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\Debouncer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\EmptyChangeToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Disposables\EmptyDisposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\FuncUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\InvokeOnDispose.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\TaskExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\TriggerChangeToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Disposables\InvokeOnDispose.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tasks\TaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChangeTokens\TriggerChangeToken.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Expressions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Disposables\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Tasks\" />
   </ItemGroup>
 </Project>

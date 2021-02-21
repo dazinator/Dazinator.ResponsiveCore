@@ -12,43 +12,9 @@ namespace Microsoft.Extensions.Primitives
         /// <returns></returns>
         public static Func<IChangeToken> CreateChangeTokenFactory(this Func<CancellationToken> cancellationTokenFactory)
         {
-            return cancellationTokenFactory.Convert(token => new CancellationChangeToken(token));
+            return cancellationTokenFactory.Cast(token => new CancellationChangeToken(token));
         }
 
-        /// <summary>
-        /// Takes a function that can register an action delegate as a "listener"and returns an <see cref="IDisposable"/> to represet that registration,
-        /// and adapts it to function that returns an <see cref="IChangeToken"/> that will be signalled when the listener is invoked.
-        /// When the <see cref="IChangeToken"/> is created, it registers the action delegate as a new "listener", disposing of any previous registration of that delegate first.
-        /// </summary>
-        /// <param name="registerListener"></param>
-        /// <returns></returns>
-        public static Func<IChangeToken> CreateChangeTokenFactory(Func<Action, IDisposable> registerListener)
-        {
-
-            IDisposable previousRegistration = null;
-            Func<IChangeToken> changeTokenFactory = () =>
-            {
-                // When should ensure any previous CancellationTokenSource is disposed, 
-                // and we remove old monitor OnChange listener, before creating new ones.
-                previousRegistration?.Dispose();
-
-                var changeTokenSource = new CancellationTokenSource();
-                var disposable = registerListener(() => changeTokenSource.Cancel());
-
-                previousRegistration = new InvokeOnDispose(() =>
-                {
-                    // Ensure disposal of listener and token source that we created.
-                    disposable.Dispose();
-                    changeTokenSource.Dispose();
-                });
-
-                var changeToken = new CancellationChangeToken(changeTokenSource.Token);
-                return changeToken;
-
-            };
-
-            return changeTokenFactory;
-        }
 
         /// <summary>
         /// Creates a factory to produce change tokens that are signalled whenever an event handler is invoked.
