@@ -45,7 +45,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Func<IServiceProvider, Func<IChangeToken>> resolver)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseChangeTokenFactory(Func<IServiceProvider, Func<IChangeToken>> resolver)
         {
             ChangeTokenFactoryResolver = resolver;
             return this;
@@ -56,13 +56,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Func<IChangeToken> resolver)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseChangeTokenFactory(Func<IChangeToken> resolver)
         {
             ChangeTokenFactoryResolver = s => resolver;
             return this;
         }
 
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<ChangeTokenProducerBuilder> configure)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseChangeTokenFactory(Action<ChangeTokenProducerBuilder> configure)
         {
             var builder = new ChangeTokenProducerBuilder();
             configure(builder);
@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<IServiceProvider, ChangeTokenProducerBuilder> configure)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseChangeTokenFactory(Action<IServiceProvider, ChangeTokenProducerBuilder> configure)
         {
             var builder = new ChangeTokenProducerBuilder();
             ChangeTokenFactoryResolver = s =>
@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Func<IServiceProvider, Func<bool>> resolver)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseEnabledChecker(Func<IServiceProvider, Func<bool>> resolver)
         {
             IsEnabledDelegateResolver = resolver;
             return this;
@@ -109,13 +109,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Func<bool> resolver)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseEnabledChecker(Func<bool> resolver)
         {
             IsEnabledDelegateResolver = s => resolver;
             return this;
         }
 
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IFuncBoolBuilderInitial> buildCallback)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseEnabledChecker(Action<IFuncBoolBuilderInitial> buildCallback)
         {
             var checkFunc = FuncBoolBuilder.Build((builder) =>
             {
@@ -125,7 +125,7 @@ namespace Microsoft.Extensions.DependencyInjection
             IsEnabledDelegateResolver = s => checkFunc;
             return this;
         }
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IServiceProvider, IFuncBoolBuilderInitial> buildCallback)
+        public IEnabledHostedServiceChangeTokenOptionsBuilder UseEnabledChecker(Action<IServiceProvider, IFuncBoolBuilderInitial> buildCallback)
         {
             IsEnabledDelegateResolver = s =>
             {

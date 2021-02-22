@@ -20,6 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Changify" Version="0.1.0-alpha.13" />      
+        <PackageReference Include="Changify" Version="0.1.0-alpha.18" />      
     </ItemGroup>
 </Project>
