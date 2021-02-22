@@ -66,11 +66,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var builder = new ChangeTokenProducerBuilder();
             configure(builder);
-            ChangeTokenFactoryResolver = s => {
+            ChangeTokenFactoryResolver = s =>
+            {
                 var result = builder.Build(out IDisposable disposable);
                 Lifetime = disposable;
                 return result;
-            };            
+            };
             return this;
         }
 
@@ -116,7 +117,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IFuncBoolBuilderInitial> buildCallback)
         {
-            var checkFunc = FuncBoolBuilder.Build((builder) => {
+            var checkFunc = FuncBoolBuilder.Build((builder) =>
+            {
                 buildCallback(builder);
             });
 
@@ -125,8 +127,10 @@ namespace Microsoft.Extensions.DependencyInjection
         }
         public IEnabledHostedServiceOptionsBuilder<THostedService> UseEnabledChecker(Action<IServiceProvider, IFuncBoolBuilderInitial> buildCallback)
         {
-            IsEnabledDelegateResolver = s => {
-                var checkFunc = FuncBoolBuilder.Build((builder) => {
+            IsEnabledDelegateResolver = s =>
+            {
+                var checkFunc = FuncBoolBuilder.Build((builder) =>
+                {
                     buildCallback(s, builder);
                 });
                 return checkFunc;

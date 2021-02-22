@@ -13,7 +13,7 @@ build:
   verbosity: detailed
 build_script:
 - cmd: dotnet tool install -g dotnet-format
-- cmd: dotnet-format -w ./src -v normal --dry-run --check
+- cmd: dotnet-format -w ./src -v normal --check
 - cmd: dotnet restore src --disable-parallel
 - cmd: dotnet build src -c Release --disable-parallel
 - cmd: dotnet pack src -c Release --output %APPVEYOR_BUILD_FOLDER%/artifacts/

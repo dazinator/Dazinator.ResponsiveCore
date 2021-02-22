@@ -65,7 +65,7 @@ namespace Microsoft.AspNetCore.Builder
             var changeTokenFactoryBuilder = new ChangeTokenProducerBuilder();
             buildChangeTokens(changeTokenFactoryBuilder);
             var changeTokenFactory = changeTokenFactoryBuilder.Build(out var disposable);
-           
+
 
             var factory = new RequestDelegateFactory(changeTokenFactory, disposable, rebuildStrategy, (onNext) =>
             {

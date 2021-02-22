@@ -40,7 +40,7 @@ namespace Dazinator.ResponsiveCore.ReloadablePipeline
         public void Dispose()
         {
             _listening?.Dispose();
-            _tokenProducerLifetime?.Dispose();           
+            _tokenProducerLifetime?.Dispose();
         }
         public void Initialise(RequestDelegate onNext)
         {
