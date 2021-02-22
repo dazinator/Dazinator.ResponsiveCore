@@ -10,6 +10,10 @@ Features:
 
 [![Build Status](https://darrelltunnell.visualstudio.com/Public%20Projects/_apis/build/status/dazinator.Dazinator.ResponsiveCore?branchName=develop)](https://darrelltunnell.visualstudio.com/Public%20Projects/_build/latest?definitionId=16&branchName=develop)
 
+Thanks:
+
+- [Changify](https://github.com/dazinator/Changify)
+
 ## Reloadable Middleware Pipelines
 
 1. Add the `Dazinator.ResponsiveCore.ReloadablePipeline.Options` nuget package to your project.
@@ -40,7 +44,19 @@ Features:
         {
             // Note: Use vs Run (latter is terminal, former is not)
             // make a change to appsettings.json "Pipelines" section and watch log output in console on furture requests.
-            app.UseReloadablePipeline<PipelineOptions>((builder, options) => ConfigureReloadablePipeline(builder, env, options));
+            app.UseReloadablePipeline((changeTokenBuilder) =>
+            {
+                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
+                changeTokenBuilder
+                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
+                    // you can include all sorts of other sources with this builder. See Changify readme.
+            },
+            configure: (appBuilder) =>
+            {
+                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
+                ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
+            });
+
             app.UseWelcomePage();
         }
 
@@ -75,11 +91,7 @@ Features:
 
 ### How do I signal the pipeline to rebuild for other sorts of changes - for example a button click?
 
-The extension methods provided in `Dazinator.AspNetCore.Builder.ReloadablePipeline.Options` package is just a thin wrapper around the core extension methods which are designed to work with a more generic `IChangeToken` concept.
-These core api's are in the `Dazinator.AspNetCore.Builder.ReloadablePipeline` nuget package.
-You can use / run the middleware passing in a `Func<IChangeToken>` which can supply whatever custom change token you want to use to signal a pipeline rebuild - this could also be `CompositeChangeToken` if you have multiple sources.
-
-You can also supply your own cancellation tokens for a pipeline, see the sample for a demonstration of that: https://github.com/dazinator/Dazinator.AspNetCore.Builder.ReloadablePipeline/blob/master/src/Sample/Startup.cs
+You can use the builder to include all sorts of other sources in the composite change token used to singal a pipeline reload. See - [Changify](https://github.com/dazinator/Changify)
 
 ### Rebuild Strategies
 
@@ -99,11 +111,8 @@ To override the default strategy, pass in an `IRebuildStrategy` as the last opti
 ## Enabled Hosted Services
 
 Suppose you have an `IHostedService` that you want to be able to disable or enable at runtime.
-
 When the service is "enabled" it should be running. When it is disabled, it should be stopped.
-
 You can do this without any code changes to your service itself.
-
 You don't have to use the `Options` pattern for this, but this is the pattern I'll promote for this example.
 
 1. Add the `Dazinator.ResponsiveCore.EnabledHostedService.Options` package to your project.

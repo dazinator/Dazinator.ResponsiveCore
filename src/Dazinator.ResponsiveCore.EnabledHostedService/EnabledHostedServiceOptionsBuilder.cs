@@ -9,12 +9,13 @@ namespace Microsoft.Extensions.DependencyInjection
         public EnabledHostedServiceOptionsBuilder()
         {
             ServiceResolver = ActivatorUtilities.GetServiceOrCreateInstance<THostedService>;
+            ChangeTokenFactoryResolver = (sp) => () => EmptyChangeToken.Instance;
         }
 
         public Func<IServiceProvider, THostedService> ServiceResolver { get; set; }
         public Func<IServiceProvider, Func<IChangeToken>> ChangeTokenFactoryResolver { get; set; }
         public Func<IServiceProvider, Func<bool>> IsEnabledDelegateResolver { get; set; }
-
+        public IDisposable Lifetime { get; set; } = EmptyDisposable.Instance;
 
         /// <summary>
         /// Use a factory Func to create the instance of the IHosted service that will be controlled by the enabled / disabled check. If you don't set this, by default <see cref="ActivatorUtilities.GetServiceOrCreateInstance<typeparamref name="THostedService"/>"/> is used.
@@ -61,27 +62,30 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<CompositeChangeTokenFactoryBuilder> configure)
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<ChangeTokenProducerBuilder> configure)
         {
-            var builder = new CompositeChangeTokenFactoryBuilder();
+            var builder = new ChangeTokenProducerBuilder();
             configure(builder);
-            ChangeTokenFactoryResolver = s => builder.Build();
+            ChangeTokenFactoryResolver = s => {
+                var result = builder.Build(out IDisposable disposable);
+                Lifetime = disposable;
+                return result;
+            };            
             return this;
         }
 
-        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<IServiceProvider, CompositeChangeTokenFactoryBuilder> configure)
+        public IEnabledHostedServiceOptionsBuilder<THostedService> UseChangeTokenFactory(Action<IServiceProvider, ChangeTokenProducerBuilder> configure)
         {
-            var builder = new CompositeChangeTokenFactoryBuilder();
+            var builder = new ChangeTokenProducerBuilder();
             ChangeTokenFactoryResolver = s =>
             {
                 configure(s, builder);
-                return builder.Build();
+                var result = builder.Build(out var disposable);
+                Lifetime = disposable;
+                return result;
             };
             return this;
         }
-
-
-
 
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline(
             this IApplicationBuilder builder,
-           Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
+           Action<ChangeTokenProducerBuilder> buildChangeTokens,
            Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
         {
             return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, false, rebuildStrategy);
@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder RunReloadablePipeline(this IApplicationBuilder builder,
-          Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
+          Action<ChangeTokenProducerBuilder> buildChangeTokens,
           Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
         {
             return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, true, rebuildStrategy);
@@ -51,7 +51,7 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder AddReloadablePipelineMiddleware(
             this IApplicationBuilder builder,
-            Action<CompositeChangeTokenFactoryBuilder> buildChangeTokens,
+            Action<ChangeTokenProducerBuilder> buildChangeTokens,
             Action<IApplicationBuilder> configure,
             bool isTerminal,
             IRebuildStrategy rebuildStrategy = null)
@@ -62,11 +62,12 @@ namespace Microsoft.AspNetCore.Builder
                 rebuildStrategy = DefaultRebuildStrategy.Create();
             }
 
-            var changeTokenFactoryBuilder = new CompositeChangeTokenFactoryBuilder();
+            var changeTokenFactoryBuilder = new ChangeTokenProducerBuilder();
             buildChangeTokens(changeTokenFactoryBuilder);
-            var changeTokenFactory = changeTokenFactoryBuilder.Build();
+            var changeTokenFactory = changeTokenFactoryBuilder.Build(out var disposable);
+           
 
-            var factory = new RequestDelegateFactory(changeTokenFactory, rebuildStrategy, (onNext) =>
+            var factory = new RequestDelegateFactory(changeTokenFactory, disposable, rebuildStrategy, (onNext) =>
             {
                 return RequestDelegateUtils.BuildRequestDelegate(builder, onNext, configure, isTerminal);
             });

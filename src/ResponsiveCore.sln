@@ -18,18 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline", "Dazinator.ResponsiveCore.ReloadablePipeline\ReloadablePipeline.csproj", "{23E25532-1D9A-4F2F-9FDF-D4D26BBAFC58}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{982977A5-6490-4F77-8A3F-4145D17918E6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService", "Dazinator.ResponsiveCore.EnabledHostedService\EnabledHostedService.csproj", "{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Shared\Shared.projitems*{23e25532-1d9a-4f2f-9fdf-d4d26bbafc58}*SharedItemsImports = 5
-		Shared\Shared.projitems*{982977a5-6490-4f77-8a3f-4145d17918e6}*SharedItemsImports = 13
-		Shared\Shared.projitems*{f85bc4b1-4e64-456e-93be-6d8d06e1fa93}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

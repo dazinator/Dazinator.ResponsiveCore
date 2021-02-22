@@ -11,6 +11,7 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
     {
         private readonly TInner _inner;
         private readonly Func<IChangeToken> _changeTokenFactory;
+        private readonly IDisposable _tokenFactoryLifetime;
         private readonly Func<bool> _shouldBeRunning;
         private IDisposable _listening;
 
@@ -24,10 +25,12 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
         // StartAsync or StopAsync will be called.
         public EnabledHostedService(TInner inner,
             Func<IChangeToken> changeTokenFactory,
+            IDisposable tokenFactoryLifetime,
             Func<bool> shouldBeRunning)
         {
             _inner = inner;
             _changeTokenFactory = changeTokenFactory;
+            _tokenFactoryLifetime = tokenFactoryLifetime;
             _shouldBeRunning = shouldBeRunning;
             _listening = ChangeTokenDebouncer.OnChangeDebounce(_changeTokenFactory, InvokeChanged, delayInMilliseconds: 500);
         }
@@ -97,6 +100,7 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
                 {
                     // TODO: dispose managed state (managed objects)
                     _listening?.Dispose();
+                    _tokenFactoryLifetime.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

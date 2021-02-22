@@ -47,14 +47,8 @@ namespace Tests
             bool startCalled = false;
             bool stopCalled = false;
 
-            CancellationTokenSource latestCancellationTokenSource = null;
-
-            var changeTokenFactory = FuncUtils
-                                .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Cast(a => new CancellationChangeToken(a.Token));
-            //.Select(a => new CancellationChangeToken(a));
-
             bool isServiceEnabled = false;
+            Action trigger;
 
             string[] args = null;
             var host = Host.CreateDefaultBuilder(args)
@@ -76,7 +70,10 @@ namespace Tests
                              return mockedService;
 
                          })
-                             .UseChangeTokenFactory(sp => changeTokenFactory)
+                             .UseChangeTokenFactory((sp, b) =>
+                             {
+                                 //b.IncludeTrigger(out trigger);
+                             })
                              .UseEnabledChecker(() =>
                              {
                                  return isServiceEnabled;
@@ -98,14 +95,8 @@ namespace Tests
             bool startCalled = false;
             bool stopCalled = false;
 
-            CancellationTokenSource latestCancellationTokenSource = null;
-
-            var changeTokenFactory = FuncUtils
-                                .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Cast(a => new CancellationChangeToken(a.Token));
-            //.Select(a => new CancellationChangeToken(a));
-
             bool isServiceEnabled = false;
+            Action trigger = null;
 
             string[] args = null;
             var host = Host.CreateDefaultBuilder(args)
@@ -127,7 +118,10 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseChangeTokenFactory((b) =>
+                         {
+                             b.IncludeTrigger(out trigger);
+                         })
                          .UseEnabledChecker(() =>
                          {
                              return isServiceEnabled;
@@ -141,7 +135,7 @@ namespace Tests
 
             // trigger change token to apply the enabled state.
             isServiceEnabled = true;
-            latestCancellationTokenSource.Cancel();
+            trigger();
 
             // wait small delay to give time for async reload to complete.
             await Task.Delay(1000);
@@ -163,16 +157,7 @@ namespace Tests
             bool startCalled = false;
             bool stopCalled = false;
 
-            CancellationTokenSource latestCancellationTokenSource = null;
-
-            var changeTokenFactory = FuncUtils
-                                .KeepLatest<CancellationTokenSource>(onNewInstance: a =>
-                                {
-                                    latestCancellationTokenSource = a;
-                                })
-                                .Cast(a => new CancellationChangeToken(a.Token));
-            //.Select(a => new CancellationChangeToken(a));
-
+            Action trigger = null;
             bool isServiceEnabled = false;
 
             string[] args = null;
@@ -195,7 +180,10 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .UseChangeTokenFactory(changeTokenFactory)
+                          .UseChangeTokenFactory((b) =>
+                          {
+                              b.IncludeTrigger(out trigger);
+                          })
                          .UseEnabledChecker(() =>
                          {
                              return isServiceEnabled;
@@ -210,7 +198,7 @@ namespace Tests
 
             // trigger change token to apply the enabled state.
             isServiceEnabled = true;
-            latestCancellationTokenSource.Cancel();
+            trigger();
             // wait small delay to give time for async reload to complete.
             await Task.Delay(1000);
 
@@ -220,7 +208,7 @@ namespace Tests
             startCalled = false;
             // enable again
             isServiceEnabled = true;
-            latestCancellationTokenSource.Cancel();
+            trigger();
             // wait small delay to give time for async reload to complete.
             await Task.Delay(500);
             // shouldn't be started a second time as service already running.
@@ -240,13 +228,6 @@ namespace Tests
 
             bool startCalled = false;
             bool stopCalled = false;
-
-            CancellationTokenSource latestCancellationTokenSource = null;
-
-            var changeTokenFactory = FuncUtils
-                                .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Cast(a => new CancellationChangeToken(a.Token));
-            //.Select(a => new CancellationChangeToken(a));
 
             bool isServiceEnabled = true;
 
@@ -270,7 +251,6 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .UseChangeTokenFactory(changeTokenFactory)
                          .UseEnabledChecker(() =>
                          {
                              return isServiceEnabled;
@@ -297,14 +277,8 @@ namespace Tests
             bool startCalled = false;
             bool stopCalled = false;
 
-            CancellationTokenSource latestCancellationTokenSource = null;
-
-            var changeTokenFactory = FuncUtils
-                                .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
-                                .Cast(a => new CancellationChangeToken(a.Token));
-            //.Select(a => new CancellationChangeToken(a));
-
             bool isServiceEnabled = true;
+            Action trigger = null;
 
             string[] args = null;
             var host = Host.CreateDefaultBuilder(args)
@@ -326,7 +300,10 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .UseChangeTokenFactory(changeTokenFactory)
+                         .UseChangeTokenFactory((b) =>
+                         {
+                             b.IncludeTrigger(out trigger);
+                         })
                          .UseEnabledChecker(() =>
                          {
                              return isServiceEnabled;
@@ -343,7 +320,7 @@ namespace Tests
 
             // trigger change token to reload the hosted service.
             isServiceEnabled = false;
-            latestCancellationTokenSource.Cancel();
+            trigger();
 
             await result.StopAsync();
 

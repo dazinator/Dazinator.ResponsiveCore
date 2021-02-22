@@ -30,10 +30,15 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var innerService = builder.ServiceResolver(sp);
                 var tokenFactory = builder.ChangeTokenFactoryResolver?.Invoke(sp);
+
+                // should now have an IDisposabe lifetime.
+                var tokenFactoryLifetime = builder.Lifetime;
+
                 var isEnabledDelegate = builder.IsEnabledDelegateResolver?.Invoke(sp);
 
                 return new EnabledHostedService<TService>(innerService,
                     tokenFactory,
+                    tokenFactoryLifetime,
                     isEnabledDelegate);
             });
             return services;
