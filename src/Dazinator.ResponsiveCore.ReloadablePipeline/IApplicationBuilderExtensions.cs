@@ -17,10 +17,13 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder UseReloadablePipeline(
             this IApplicationBuilder builder,
-           Action<ChangeTokenProducerBuilder> buildChangeTokens,
-           Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
+           Action<ReloadableMiddlewarePipelineOptions> configureOptions)
         {
-            return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, false, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, (o) =>
+            {
+                o.IsTerminal = false;
+                configureOptions?.Invoke(o);
+            });
         }
 
         /// <summary>
@@ -32,10 +35,13 @@ namespace Microsoft.AspNetCore.Builder
         /// <param name="rebuildStrategy">The strategy to use for rebuilding the middleware pipeline. <see cref="RebuildOnDemandStrategy"/></param> and also <see cref="RebuildOnInvalidateStrategy"/> for examples. If null, <see cref="DefaultRebuildStrategy.Create"/> will be used.
         /// <returns></returns>
         public static IApplicationBuilder RunReloadablePipeline(this IApplicationBuilder builder,
-          Action<ChangeTokenProducerBuilder> buildChangeTokens,
-          Action<IApplicationBuilder> configure, IRebuildStrategy rebuildStrategy = null)
+          Action<ReloadableMiddlewarePipelineOptions> configureOptions)
         {
-            return AddReloadablePipelineMiddleware(builder, buildChangeTokens, configure, true, rebuildStrategy);
+            return AddReloadablePipelineMiddleware(builder, (o) =>
+            {
+                o.IsTerminal = true;
+                configureOptions?.Invoke(o);
+            });
         }
 
 
@@ -51,29 +57,60 @@ namespace Microsoft.AspNetCore.Builder
         /// <returns></returns>
         public static IApplicationBuilder AddReloadablePipelineMiddleware(
             this IApplicationBuilder builder,
-            Action<ChangeTokenProducerBuilder> buildChangeTokens,
-            Action<IApplicationBuilder> configure,
-            bool isTerminal,
-            IRebuildStrategy rebuildStrategy = null)
+            Action<ReloadableMiddlewarePipelineOptions> configureOptions)
         {
+            var options = new ReloadableMiddlewarePipelineOptions(builder);
+            configureOptions(options);
 
-            if (rebuildStrategy == null)
+            var factory = new RequestDelegateFactory(options, (onNext) =>
             {
-                rebuildStrategy = DefaultRebuildStrategy.Create();
-            }
-
-            var changeTokenFactoryBuilder = new ChangeTokenProducerBuilder();
-            buildChangeTokens(changeTokenFactoryBuilder);
-            var changeTokenFactory = changeTokenFactoryBuilder.Build(out var disposable);
-
-
-            var factory = new RequestDelegateFactory(changeTokenFactory, disposable, rebuildStrategy, (onNext) =>
-            {
-                return RequestDelegateUtils.BuildRequestDelegate(builder, onNext, configure, isTerminal);
+                return RequestDelegateUtils.BuildRequestDelegate(builder, onNext, options.ConfigureMiddlewarePipelineDelegate, options.IsTerminal);
             });
             builder.UseMiddleware<ReloadPipelineMiddleware>(factory);
             return builder;
         }
+
+    }
+
+    public class ReloadableMiddlewarePipelineOptions
+    {
+        public ReloadableMiddlewarePipelineOptions(IApplicationBuilder builder)
+        {
+            Builder = builder;
+            ConfigureMiddlewarePipelineDelegate = null;
+            RebuildStrategy = DefaultRebuildStrategy.Create();
+        }
+
+        public IRebuildStrategy RebuildStrategy { get; set; } = null;
+
+        public Func<IChangeToken> ChangeTokenProducer { get; set; } = null;
+        public IDisposable ChangeTokenProducerLifetime { get; set; } = null;
+
+        public bool IsTerminal { get; set; } = false;
+
+        public IApplicationBuilder Builder { get; }
+
+        public Action<IApplicationBuilder> ConfigureMiddlewarePipelineDelegate { get; set; }
+
+        public ReloadableMiddlewarePipelineOptions SetChangeTokenProducer(Func<IChangeToken> resolver, IDisposable lifetime)
+        {
+            ChangeTokenProducer = resolver;
+            ChangeTokenProducerLifetime = lifetime;
+            return this;
+        }
+
+        public ReloadableMiddlewarePipelineOptions SetTerminal()
+        {
+            IsTerminal = true;
+            return this;
+        }
+
+        public ReloadableMiddlewarePipelineOptions ConfigureMiddlewarePipeline(Action<IApplicationBuilder> configure)
+        {
+            ConfigureMiddlewarePipelineDelegate = configure;
+            return this;
+        }
+
 
     }
 }

@@ -18,8 +18,6 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'net50'">
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     </ItemGroup>
+    <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 
-    <ItemGroup>
-        <PackageReference Include="Changify" Version="0.1.0-alpha.18" />      
-    </ItemGroup>
 </Project>

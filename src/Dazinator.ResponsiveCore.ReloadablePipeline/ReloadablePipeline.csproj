@@ -7,7 +7,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-        <PackageReference Include="Changify" Version="0.1.0-alpha.18" />
     </ItemGroup>
+
+    <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 
 </Project>

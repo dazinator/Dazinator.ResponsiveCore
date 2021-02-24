@@ -1,11 +1,11 @@
 using System;
-using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace Sample
 {
@@ -30,16 +30,14 @@ namespace Sample
 
             services.AddEnabledHostedService<HostedService>(o =>
             {
-                o.UseChangeTokenFactory((sp, b) =>
-                {
-                    var monitor = sp.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
-                    b.IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
-                })
-                .UseEnabledChecker(sp =>
-                {
-                    var monitor = sp.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
-                    return () => monitor.CurrentValue?.Enabled ?? false;
-                });
+                var monitor = o.Services.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
+                var tokenProducer = new ChangeTokenProducerBuilder()
+                                   .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
+                                   .Build(out var disposable);
+
+                o.ServiceOptions.SetChangeTokenProducer(tokenProducer, disposable)
+                                .SetShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+
             });
         }
 
@@ -50,37 +48,41 @@ namespace Sample
             // Note: UseReloadablePipeline vs RunReloadablePipeline (latter is terminal, former is not).
 
             // make a change to appsettings.json "Pipelines" section and watch log output in console on furture requests.
-            app.UseReloadablePipeline((changeTokenBuilder) =>
+            app.UseReloadablePipeline((options) =>
             {
                 var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
-                changeTokenBuilder
-                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
-            },
-            configure: (appBuilder) =>
-            {
-                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
-                ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
-            });
+                var tokenProducer = new ChangeTokenProducerBuilder()
+                                  .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
+                                  .Build(out var disposable);
 
+                options.SetChangeTokenProducer(tokenProducer, disposable)
+                       .ConfigureMiddlewarePipeline((app) =>
+                       {
+                           ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
+                       });
+            });      
 
             Action triggerReload = null;
 
             // Demonstrates another reloadable middleware pipeline that is reloaded by triggering a cancellation token.
             app.Map("/specialpipeline", (builder) =>
             {
-                // Using extension method that allows a cancellation token to be supplied to trigger reload.
-                builder.RunReloadablePipeline((changeTokenBuilder) =>
-                {
-                    changeTokenBuilder.IncludeTrigger(out triggerReload);
-                }, (subBuilder) =>
-                {
-                    var logger = subBuilder.ApplicationServices.GetRequiredService<ILogger<Startup>>();
-                    logger.LogInformation("Building special-pipeline!");
 
-                    // this is a terminal pipeline, so let's end with welcome page.
-                    subBuilder.UseWelcomePage();
-                });
+                builder.RunReloadablePipeline((options) =>
+                {
+                    var tokenProducer = new ChangeTokenProducerBuilder()
+                                      .IncludeTrigger(out triggerReload)
+                                      .Build(out var disposable);
 
+                    options.SetChangeTokenProducer(tokenProducer, disposable)
+                           .ConfigureMiddlewarePipeline((app) =>
+                           {
+                               var logger = app.ApplicationServices.GetRequiredService<ILogger<Startup>>();
+                               logger.LogInformation("Building special-pipeline!");
+                               // this is a terminal pipeline, so let's end with welcome page.
+                               app.UseWelcomePage();
+                           });
+                });           
             });
 
             app.Map("/triggerrebuild", (builder) =>

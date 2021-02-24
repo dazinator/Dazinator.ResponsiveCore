@@ -2,9 +2,9 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public interface IEnabledHostedServiceOptionsBuilder<THostedService> : IEnabledHostedServiceChangeTokenOptionsBuilder
+    public interface IEnabledHostedServiceOptionsBuilder<THostedService> : IEnabledHostedServiceOptionsBuilder
     {
-        IEnabledHostedServiceOptionsBuilder<THostedService> UseServiceFactory(Func<IServiceProvider, THostedService> resolver);
-        IEnabledHostedServiceOptionsBuilder<THostedService> UseServiceFactory(Func<THostedService> resolver);
+        EnabledHostedServiceOptions SetServiceFactory(Func<IServiceProvider, THostedService> resolver);
+        EnabledHostedServiceOptions SetServiceFactory(Func<THostedService> resolver);
     }
 }

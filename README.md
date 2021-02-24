@@ -12,11 +12,11 @@ Features:
 
 Thanks:
 
-- [Changify](https://github.com/dazinator/Changify)
+- [Changify](https://github.com/dazinator/Changify) - easily build composite change token producers.
 
 ## Reloadable Middleware Pipelines
 
-1. Add the `Dazinator.ResponsiveCore.ReloadablePipeline.Options` nuget package to your project.
+1. Add the `Dazinator.ResponsiveCore.ReloadablePipeline` nuget package to your project.
 2. Configure an `Options` class, and then build a middleware pipeline that from it that will be rebuilt whenever `IOptionsMonitor` detects a change:
  
 ```csharp
@@ -44,18 +44,19 @@ Thanks:
         {
             // Note: Use vs Run (latter is terminal, former is not)
             // make a change to appsettings.json "Pipelines" section and watch log output in console on furture requests.
-            app.UseReloadablePipeline((changeTokenBuilder) =>
+             app.UseReloadablePipeline((options) =>
             {
                 var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
-                changeTokenBuilder
-                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()));
-                    // you can include all sorts of other sources with this builder. See Changify readme.
-            },
-            configure: (appBuilder) =>
-            {
-                var monitor = app.ApplicationServices.GetRequiredService<IOptionsMonitor<PipelineOptions>>();
-                ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
-            });
+                var tokenProducer = new ChangeTokenProducerBuilder() // I am choosing to use the Changify library to build a Func<IChangeToken> as is easier - you don't have to.
+                                  .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
+                                  .Build(out var disposable);
+
+                options.SetChangeTokenProducer(tokenProducer, disposable)
+                       .ConfigureMiddlewarePipeline((app) =>
+                       {
+                           ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
+                       });
+            });      
 
             app.UseWelcomePage();
         }
@@ -91,7 +92,7 @@ Thanks:
 
 ### How do I signal the pipeline to rebuild for other sorts of changes - for example a button click?
 
-You can use the builder to include all sorts of other sources in the composite change token used to singal a pipeline reload. See - [Changify](https://github.com/dazinator/Changify)
+You can supply a `Func<IChangeToken>` (change token producer) that will trigger a reload whenever an `IChangeToken` is signalled.
 
 ### Rebuild Strategies
 
@@ -100,22 +101,21 @@ Once the new pipeline has been build, the new instance is swapped in for the old
 This strategy means there is no downtime for requests - requests continue to be processed through the old pipeline until the new one is swapped in without any lock delaying requests.
 Another optional strategy that is provided out of the box, allows instead for the pipeline to be lazily re-built in line with the next request. This means other requests that occur whilst a rebuild is in progress may queue behind the lock until the rebuild completes, and for this reason - its not the default strategy - however it might prove useful if for example you'd like access to a current httpcontext (request) during the pipeline build itself - which is ordinarly not achievable.
 
-To override the default strategy, pass in an `IRebuildStrategy` as the last optional parameter (you could also implement your own):
+To override the default strategy, set the `RebuildStrategy` on the `options` to an instance of `IRebuildStrategy`.
 
+
+```csharp
+  app.UseReloadablePipeline((options) =>
+            {
+              options.RebuildStragety = new RebuildOnDemandStrategy();
+              ...
 ```
-   app.UseReloadablePipeline<PipelineOptions>((builder, options) => ConfigureReloadablePipeline(builder, env, options), new RebuildOnDemandStrategy()); // will rebuild the pipeline in line with a request behind a lock.
 
+## Responsive Hosted Services
 
-```
+Suppose you have an `IHostedService` that you want to be able to stop and start at runtime without restarting the application.
 
-## Enabled Hosted Services
-
-Suppose you have an `IHostedService` that you want to be able to disable or enable at runtime.
-When the service is "enabled" it should be running. When it is disabled, it should be stopped.
-You can do this without any code changes to your service itself.
-You don't have to use the `Options` pattern for this, but this is the pattern I'll promote for this example.
-
-1. Add the `Dazinator.ResponsiveCore.EnabledHostedService.Options` package to your project.
+1. Add the `Dazinator.ResponsiveCore.EnabledHostedService` package to your project.
 
 2. Create an `Options` class that you can then bind to config to represent whether the service is enabled or disabled.
 
@@ -135,22 +135,21 @@ and
 3. Replace your call to `services.AddHostedService` with  `AddEnabledHostedService`:
 
 ```csharp
-    services.AddEnabledHostedService<HostedService>(o =>
-                o.UseOptionsMonitor<HostedService, HostedServiceOptions>(
-                    options =>
-                    {
-                        return options.Enabled;
-                    }));
+     services.AddEnabledHostedService<HostedService>(o =>
+            {
+                var monitor = o.Services.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
+                var tokenProducer = new ChangeTokenProducerBuilder()
+                                   .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
+                                   .Build(out var disposable);
+
+                o.ServiceOptions.SetChangeTokenProducer(tokenProducer, disposable)
+                                .SetShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+
+            });
 
 ```
 
+Note: Above I am basically configuring an `IChangeToken` producer, and a delegate that returns a boolean that will be run whenever the `IChangeToken` is signalled.
+I am using the `Changify` library in the sample and in the tests to build the token producer, but you can provide a `Func<IChangeToken>` however you see fit.
+
 4. Start your application with that config setting as `false`. Your service will not start. Whilst the application is running, change the config to be `true` and save that change. The change is detected and your service will now start. Again, whilst your application is running, change the config back to `false` - your service will be stopped. Repeat this ad infinitum - if you have the time, all the while basking in the glory of this responsivity.
-
-### I don't want to use the Options pattern
-
-When calling `AddEnabledHostedService` you are supplied a builder, `UseOptionsMonitor` is one extension method that makes controlling the enabled state of the service via an options class easy.
-You don't have to use that, you can directly set various properties that will control:
-- How an `IChangeToken` is supplied that can used to invalidate the current status, so that a new status check happens.
-- A delegate used to obtain the new enabled status for the service. This is invoked whenever the `IChangeToken` is singalled. Based on the returned value, and the current status of the service, the service may stop or start accordingly.    
-
-

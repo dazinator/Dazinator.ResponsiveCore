@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 
 namespace Dazinator.ResponsiveCore.EnabledHostedService
 {
-    public class EnabledHostedService<TInner> : IHostedService, IDisposable
-    where TInner : IHostedService
+    public class EnabledHostedServiceAsync<TInner> : IHostedService, IDisposable
+where TInner : IHostedService
     {
         private readonly TInner _inner;
-        private readonly Func<IChangeToken> _changeTokenFactory;
-        private readonly IDisposable _tokenFactoryLifetime;
-        private readonly Func<bool> _shouldBeRunning;
+        private readonly EnabledHostedServiceOptions _options;
+        //private readonly Func<IChangeToken> _changeTokenFactory;
+        //private readonly IDisposable _tokenFactoryLifetime;
+        //private readonly Func<CancellationToken, Task<bool>> _shouldBeRunning;
         private IDisposable _listening;
 
         private bool _isRunning;
@@ -23,16 +25,13 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
         // based on a change token that gets triggered, to re-evaluate whether
         // it should be currently running or not. Based on that evaluation and the current state of the service,
         // StartAsync or StopAsync will be called.
-        public EnabledHostedService(TInner inner,
-            Func<IChangeToken> changeTokenFactory,
-            IDisposable tokenFactoryLifetime,
-            Func<bool> shouldBeRunning)
+        public EnabledHostedServiceAsync(
+            TInner inner,
+            EnabledHostedServiceOptions options)
         {
             _inner = inner;
-            _changeTokenFactory = changeTokenFactory;
-            _tokenFactoryLifetime = tokenFactoryLifetime;
-            _shouldBeRunning = shouldBeRunning;
-            _listening = ChangeTokenDebouncer.OnChangeDebounce(_changeTokenFactory, InvokeChanged, delayInMilliseconds: 500);
+            _options = options;
+            _listening = ChangeTokenDebouncer.OnChangeDebounce(_options.ChangeTokenProducer, InvokeChanged, delayInMilliseconds: 500);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -53,11 +52,10 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
             // by invoking a predicate - should it be running or not?
             // then enact that desired state by comparing against the IsRunning and starting or stopping accordingy.
 
-            bool shouldBeRunning = _shouldBeRunning?.Invoke() ?? true;
+            bool shouldBeRunning = await _options.ShouldBeRunningAsyncCheck(hostCancellationToken);
             // TODO: may need to lock in case Start or Stop is currently running and hasn't finished toggling the _isRunning flag yet.
             if (_isRunning && !shouldBeRunning)
             {
-
                 var token = default(CancellationToken); // todo: should probably use a proper token here with a time specified.
                 await StopInnerAsync(token);
             }
@@ -100,7 +98,7 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
                 {
                     // TODO: dispose managed state (managed objects)
                     _listening?.Dispose();
-                    _tokenFactoryLifetime.Dispose();
+                    _options.ChangeTokenProducerLifetime?.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -116,7 +114,5 @@ namespace Dazinator.ResponsiveCore.EnabledHostedService
             GC.SuppressFinalize(this);
         }
     }
-
-
 
 }

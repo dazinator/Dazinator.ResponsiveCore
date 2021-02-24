@@ -20,26 +20,16 @@ namespace Microsoft.Extensions.DependencyInjection
            where TService : IHostedService
         {
 #if SUPPORTS_ADD_HOSTED_SERVICE_WITHFACTORYFUNC
-            services.AddHostedService<EnabledHostedService<TService>>((sp) =>
+            services.AddHostedService<EnabledHostedServiceAsync<TService>>((sp) =>
 #else
-            services.AddTransient<IHostedService, EnabledHostedService<TService>>((sp) =>
+            services.AddTransient<IHostedService, EnabledHostedServiceAsync<TService>>((sp) =>
 #endif
             {
-                var builder = new EnabledHostedServiceOptionsBuilder<TService>();
+                var builder = new EnabledHostedServiceOptionsBuilder<TService>(sp);
                 configure(builder);
 
-                var innerService = builder.ServiceResolver(sp);
-                var tokenFactory = builder.ChangeTokenFactoryResolver?.Invoke(sp);
-
-                // should now have an IDisposabe lifetime.
-                var tokenFactoryLifetime = builder.Lifetime;
-
-                var isEnabledDelegate = builder.IsEnabledDelegateResolver?.Invoke(sp);
-
-                return new EnabledHostedService<TService>(innerService,
-                    tokenFactory,
-                    tokenFactoryLifetime,
-                    isEnabledDelegate);
+                var innerService = builder.ServiceResolver(sp);              
+                return new EnabledHostedServiceAsync<TService>(innerService, builder.ServiceOptions);
             });
             return services;
         }
