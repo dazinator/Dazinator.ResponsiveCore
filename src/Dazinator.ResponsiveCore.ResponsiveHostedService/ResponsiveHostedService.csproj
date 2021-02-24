@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.1;netstandard2.0;net50</TargetFrameworks>
-        <PackageId>Dazinator.ResponsiveCore.EnabledHostedService</PackageId>
+        <PackageId>Dazinator.ResponsiveCore.ResponsiveHostedService</PackageId>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">

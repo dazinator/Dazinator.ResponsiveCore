@@ -28,15 +28,15 @@ namespace Sample
             // Bind config options for hosted service that can be start / stopped via config change
             services.Configure<HostedServiceOptions>(Configuration.GetSection("HostedService"));
 
-            services.AddEnabledHostedService<HostedService>(o =>
+            services.AddResponsiveHostedService<HostedService>(o =>
             {
                 var monitor = o.Services.GetRequiredService<IOptionsMonitor<HostedServiceOptions>>();
                 var tokenProducer = new ChangeTokenProducerBuilder()
                                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
                                    .Build(out var disposable);
 
-                o.ServiceOptions.SetChangeTokenProducer(tokenProducer, disposable)
-                                .SetShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+                o.ServiceOptions.RespondsTo(tokenProducer, disposable)
+                                .WithShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
 
             });
         }
@@ -55,12 +55,12 @@ namespace Sample
                                   .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
                                   .Build(out var disposable);
 
-                options.SetChangeTokenProducer(tokenProducer, disposable)
-                       .ConfigureMiddlewarePipeline((app) =>
+                options.RespondsTo(tokenProducer, disposable)
+                       .WithPipelineRebuild((app) =>
                        {
                            ConfigureReloadablePipeline(app, env, monitor.CurrentValue);
                        });
-            });      
+            });
 
             Action triggerReload = null;
 
@@ -74,15 +74,15 @@ namespace Sample
                                       .IncludeTrigger(out triggerReload)
                                       .Build(out var disposable);
 
-                    options.SetChangeTokenProducer(tokenProducer, disposable)
-                           .ConfigureMiddlewarePipeline((app) =>
+                    options.RespondsTo(tokenProducer, disposable)
+                           .WithPipelineRebuild((app) =>
                            {
                                var logger = app.ApplicationServices.GetRequiredService<ILogger<Startup>>();
                                logger.LogInformation("Building special-pipeline!");
                                // this is a terminal pipeline, so let's end with welcome page.
                                app.UseWelcomePage();
                            });
-                });           
+                });
             });
 
             app.Map("/triggerrebuild", (builder) =>

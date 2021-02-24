@@ -1,19 +1,20 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 {
-    public class EnabledHostedServiceOptionsBuilder<THostedService> : IEnabledHostedServiceOptionsBuilder<THostedService>
+    public class ResponsiveHostedServiceOptionsBuilder<THostedService> : IResponsiveHostedServiceOptionsBuilder<THostedService>
     {
-        public EnabledHostedServiceOptionsBuilder(IServiceProvider services)
+        public ResponsiveHostedServiceOptionsBuilder(IServiceProvider services)
         {
             Services = services;
             ServiceResolver = ActivatorUtilities.GetServiceOrCreateInstance<THostedService>;
-            ServiceOptions = new EnabledHostedServiceOptions(Services);
+            ServiceOptions = new ResponsiveHostedServiceOptions(Services);
             // ChangeTokenFactoryResolver = (sp) => () => EmptyChangeToken.Instance;
         }
 
         public Func<IServiceProvider, THostedService> ServiceResolver { get; set; }
-        public EnabledHostedServiceOptions ServiceOptions { get; set; }
+        public ResponsiveHostedServiceOptions ServiceOptions { get; set; }
         public IServiceProvider Services { get; }
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public EnabledHostedServiceOptions SetServiceFactory(Func<IServiceProvider, THostedService> resolver)
+        public ResponsiveHostedServiceOptions SetServiceFactory(Func<IServiceProvider, THostedService> resolver)
         {
             ServiceResolver = resolver;
             return ServiceOptions;
@@ -32,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public EnabledHostedServiceOptions SetServiceFactory(Func<THostedService> resolver)
+        public ResponsiveHostedServiceOptions SetServiceFactory(Func<THostedService> resolver)
         {
             ServiceResolver = (s) => resolver();
             return ServiceOptions;

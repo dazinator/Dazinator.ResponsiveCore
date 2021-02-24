@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Tests
 {
-    public class EnabledHostedServiceTests
+    public class ResponsiveHostedServiceTests
     {
         [Fact(Skip = "Testing assumption for how existing functionality works in the box")]
         public async Task Can_Test_Hosted_Service_Starts_And_Stops()
@@ -54,7 +54,7 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(a =>
+                     services.AddResponsiveHostedService<MockHostedService>(a =>
                      {
                          a.SetServiceFactory(sp =>
                          {
@@ -70,7 +70,7 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .SetShouldBeRunningCheck(() =>
+                         .WithShouldBeRunningCheck(() =>
                              {
                                  return isServiceEnabled;
                              });
@@ -98,7 +98,7 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(a =>
+                     services.AddResponsiveHostedService<MockHostedService>(a =>
                      {
                          var tokenProducer = new ChangeTokenProducerBuilder()
                                                 .IncludeTrigger(out trigger)
@@ -118,8 +118,8 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .SetChangeTokenProducer(tokenProducer, disposable)
-                                        .SetShouldBeRunningCheck(() =>
+                         .RespondsTo(tokenProducer, disposable)
+                                        .WithShouldBeRunningCheck(() =>
                                         {
                                             return isServiceEnabled;
                                         });
@@ -165,7 +165,7 @@ namespace Tests
                      var tokenProducer = new ChangeTokenProducerBuilder()
                                                .IncludeTrigger(out trigger)
                                                 .Build(out var disposable);
-                     services.AddEnabledHostedService<MockHostedService>(a =>
+                     services.AddResponsiveHostedService<MockHostedService>(a =>
                      {
                          a.SetServiceFactory(sp =>
                          {
@@ -180,8 +180,8 @@ namespace Tests
                             });
                              return mockedService;
                          })
-                         .SetChangeTokenProducer(tokenProducer, disposable)
-                            .SetShouldBeRunningCheck(() =>
+                         .RespondsTo(tokenProducer, disposable)
+                            .WithShouldBeRunningCheck(() =>
                             {
                                 return isServiceEnabled;
                             });
@@ -232,7 +232,7 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(a =>
+                     services.AddResponsiveHostedService<MockHostedService>(a =>
                      {
                          a.SetServiceFactory(sp =>
                          {
@@ -248,7 +248,7 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .SetShouldBeRunningCheck(() =>
+                         .WithShouldBeRunningCheck(() =>
                          {
                              return isServiceEnabled;
                          });
@@ -281,7 +281,7 @@ namespace Tests
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
                  {
-                     services.AddEnabledHostedService<MockHostedService>(a =>
+                     services.AddResponsiveHostedService<MockHostedService>(a =>
                      {
                          var tokenProducer = new ChangeTokenProducerBuilder()
                                              .IncludeTrigger(out trigger)
@@ -301,8 +301,8 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .SetChangeTokenProducer(tokenProducer, disposable)
-                         .SetShouldBeRunningCheck(() =>
+                         .RespondsTo(tokenProducer, disposable)
+                         .WithShouldBeRunningCheck(() =>
                          {
                              return isServiceEnabled;
                          });
@@ -362,7 +362,7 @@ namespace Tests
                          a.IsEnabled = isServiceEnabled;
                      });
 
-                     services.AddEnabledHostedService<MockHostedService>(
+                     services.AddResponsiveHostedService<MockHostedService>(
                          a =>
                          {
                              var monitor = a.Services.GetRequiredService<IOptionsMonitor<TestOptions>>();
@@ -372,8 +372,8 @@ namespace Tests
                                              .Build(out var disposable);
 
                              a.SetServiceFactory(sp => mockedService)
-                              .SetChangeTokenProducer(tokenProducer, disposable)
-                             .SetShouldBeRunningCheck(() =>
+                              .RespondsTo(tokenProducer, disposable)
+                             .WithShouldBeRunningCheck(() =>
                              {
                                  return monitor.CurrentValue?.IsEnabled ?? false;
                              });
@@ -425,7 +425,7 @@ namespace Tests
                  {
                      services.AddSingleton<TestClassWithAnEvent>(classWithEvent);
 
-                     services.AddEnabledHostedService<MockHostedService>(
+                     services.AddResponsiveHostedService<MockHostedService>(
                          a =>
                          {
                              var tokenProducer = new ChangeTokenProducerBuilder()
@@ -436,8 +436,8 @@ namespace Tests
                                             .Build(out var disposable);
 
                              a.SetServiceFactory(sp => mockedService)
-                             .SetChangeTokenProducer(tokenProducer, disposable)
-                             .SetShouldBeRunningCheck(() => isServiceEnabled);
+                             .RespondsTo(tokenProducer, disposable)
+                             .WithShouldBeRunningCheck(() => isServiceEnabled);
                          });
                  });
 

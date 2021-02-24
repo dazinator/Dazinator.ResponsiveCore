@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 
-namespace Dazinator.ResponsiveCore.EnabledHostedService
+namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 {
-    public class EnabledHostedServiceAsync<TInner> : IHostedService, IDisposable
+    public class ResponsiveHostedServiceAsync<TInner> : IHostedService, IDisposable
 where TInner : IHostedService
     {
         private readonly TInner _inner;
-        private readonly EnabledHostedServiceOptions _options;
+        private readonly ResponsiveHostedServiceOptions _options;
         //private readonly Func<IChangeToken> _changeTokenFactory;
         //private readonly IDisposable _tokenFactoryLifetime;
         //private readonly Func<CancellationToken, Task<bool>> _shouldBeRunning;
@@ -25,9 +24,9 @@ where TInner : IHostedService
         // based on a change token that gets triggered, to re-evaluate whether
         // it should be currently running or not. Based on that evaluation and the current state of the service,
         // StartAsync or StopAsync will be called.
-        public EnabledHostedServiceAsync(
+        public ResponsiveHostedServiceAsync(
             TInner inner,
-            EnabledHostedServiceOptions options)
+            ResponsiveHostedServiceOptions options)
         {
             _inner = inner;
             _options = options;

@@ -20,15 +20,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReloadablePipeline", "Dazin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{8997E679-83E4-47C5-BE60-309D9C26712F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnabledHostedService", "Dazinator.ResponsiveCore.EnabledHostedService\EnabledHostedService.csproj", "{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{728CEC29-772F-4C46-9EF6-EF7FE4182025}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResponsiveHostedService", "Dazinator.ResponsiveCore.ResponsiveHostedService\ResponsiveHostedService.csproj", "{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{23e25532-1d9a-4f2f-9fdf-d4d26bbafc58}*SharedItemsImports = 5
 		Shared\Shared.projitems*{728cec29-772f-4c46-9ef6-ef7fe4182025}*SharedItemsImports = 13
-		Shared\Shared.projitems*{f85bc4b1-4e64-456e-93be-6d8d06e1fa93}*SharedItemsImports = 5
+		Shared\Shared.projitems*{73618ef6-9e0a-4246-8cb6-af60b2e60eb5}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +47,10 @@ Global
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8997E679-83E4-47C5-BE60-309D9C26712F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F85BC4B1-4E64-456E-93BE-6D8D06E1FA93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

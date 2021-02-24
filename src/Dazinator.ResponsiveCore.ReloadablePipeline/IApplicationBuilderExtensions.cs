@@ -92,7 +92,7 @@ namespace Microsoft.AspNetCore.Builder
 
         public Action<IApplicationBuilder> ConfigureMiddlewarePipelineDelegate { get; set; }
 
-        public ReloadableMiddlewarePipelineOptions SetChangeTokenProducer(Func<IChangeToken> resolver, IDisposable lifetime)
+        public ReloadableMiddlewarePipelineOptions RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime)
         {
             ChangeTokenProducer = resolver;
             ChangeTokenProducerLifetime = lifetime;
@@ -105,7 +105,7 @@ namespace Microsoft.AspNetCore.Builder
             return this;
         }
 
-        public ReloadableMiddlewarePipelineOptions ConfigureMiddlewarePipeline(Action<IApplicationBuilder> configure)
+        public ReloadableMiddlewarePipelineOptions WithPipelineRebuild(Action<IApplicationBuilder> configure)
         {
             ConfigureMiddlewarePipelineDelegate = configure;
             return this;

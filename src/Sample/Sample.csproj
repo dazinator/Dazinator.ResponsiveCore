@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dazinator.ResponsiveCore.EnabledHostedService\EnabledHostedService.csproj" />
       <ProjectReference Include="..\Dazinator.ResponsiveCore.ReloadablePipeline\ReloadablePipeline.csproj" />
+      <ProjectReference Include="..\Dazinator.ResponsiveCore.ResponsiveHostedService\ResponsiveHostedService.csproj" />
     </ItemGroup>
 
     <ItemGroup>
