@@ -7,15 +7,15 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ResponsiveServicesRequirementsExtensions
     {
         public static void ConfigureRequirements(
-            this ResponsiveHostedServiceOptions options,        
+            this ResponsiveHostedServiceOptions options,
             Action<ICompositeRequirementBuilder> configure)
         {
             var builder = new CompositeRequirementBuilder();
             configure(builder);
-            
+
             options.WithAsyncShouldBeRunningCheck(async (cancelToken) =>
             {
-                var composite = builder.Build(options.Services);               
+                var composite = builder.Build(options.Services);
                 try
                 {
                     return await composite.IsSatisfied(cancelToken);
@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var disposableComposite = composite as IDisposable;
                     disposableComposite?.Dispose();
-                }               
+                }
             });
         }
     }

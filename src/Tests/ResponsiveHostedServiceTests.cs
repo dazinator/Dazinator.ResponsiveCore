@@ -486,7 +486,7 @@ namespace Tests
             string[] args = null;
             var host = Host.CreateDefaultBuilder(args)
                  .ConfigureServices(services =>
-                 {                   
+                 {
 
                      services.AddResponsiveHostedService<MockHostedService>(
                          a =>

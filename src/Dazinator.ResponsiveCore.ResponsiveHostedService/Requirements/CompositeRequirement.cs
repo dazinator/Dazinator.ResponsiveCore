@@ -44,7 +44,7 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService.Requirements
                     {
                         if (item is IDisposable disposable)
                         {
-                            disposable?.Dispose();                           
+                            disposable?.Dispose();
                         }
                     }
                 }

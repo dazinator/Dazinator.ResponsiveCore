@@ -8,7 +8,7 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService.Requirements
     {
         private readonly Func<CancellationToken, bool> _check;
 
-        public FuncRequirement(           
+        public FuncRequirement(
             Func<CancellationToken, bool> check)
         {
             _check = check;
