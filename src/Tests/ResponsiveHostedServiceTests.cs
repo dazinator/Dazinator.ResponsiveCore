@@ -454,6 +454,72 @@ namespace Tests
             Assert.False(startCalled);
             Assert.True(stopCalled);
         }
+
+
+        [Fact]
+        public async Task EnabledService_CanBeRegistered_UsingRequirementsPattern()
+        {
+
+            bool startCalled = false;
+            bool stopCalled = false;
+
+            //CancellationTokenSource latestCancellationTokenSource = null;
+
+            //var changeTokenFactory = FuncUtils
+            //                    .KeepLatest<CancellationTokenSource>(onNewInstance: a => { latestCancellationTokenSource = a; })
+            //                    .Convert(a => new CancellationChangeToken(a.Token));
+            //.Select(a => new CancellationChangeToken(a));
+
+            bool isServiceEnabled = true;
+
+            var mockedService = new MockHostedService(
+                         onStartAsync: async (cancelToken) =>
+                         {
+                             startCalled = true;
+                         },
+                        onStopAsync: async (cancelToken) =>
+                        {
+                            stopCalled = true;
+                        });
+
+
+            string[] args = null;
+            var host = Host.CreateDefaultBuilder(args)
+                 .ConfigureServices(services =>
+                 {                   
+
+                     services.AddResponsiveHostedService<MockHostedService>(
+                         a =>
+                         {
+                             var monitor = a.Services.GetRequiredService<IOptionsMonitor<TestOptions>>();
+
+                             var tokenProducer = new ChangeTokenProducerBuilder()
+                                             .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
+                                             .Build(out var disposable);
+
+                             a.SetServiceFactory(sp => mockedService)
+                              .RespondsTo(tokenProducer, disposable)
+                             .ConfigureRequirements((b) =>
+                             {
+                                 // if any return false, the service will not start (or be stopped if its running).
+                                 b.IncludeFunc(token => true)
+                                  .IncludeFunc(token => true)
+                                  .IncludeFunc(token => true);
+                             });
+                         });
+                 });
+
+            var result = await host.StartAsync();
+            Assert.True(startCalled);
+            Assert.False(stopCalled);
+
+            startCalled = false;
+            await result.StopAsync();
+
+            Assert.False(startCalled);
+            Assert.True(stopCalled);
+        }
+
     }
 
     public class TestClassWithAnEvent
@@ -472,8 +538,6 @@ namespace Tests
             SomeEvent?.Invoke(this, "Fired");
         }
     }
-
-
 
     public class MockHostedService : IHostedService
     {

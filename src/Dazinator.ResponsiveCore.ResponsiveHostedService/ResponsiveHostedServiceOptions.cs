@@ -25,20 +25,18 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
             return this;
         }
 
-        public ResponsiveHostedServiceOptions WithShouldBeRunningCheck(Func<bool> shouldBeRunningCheck)
+        public void WithShouldBeRunningCheck(Func<bool> shouldBeRunningCheck)
         {
             ShouldBeRunningAsyncCheck = (cancelToken) =>
                 {
                     var result = shouldBeRunningCheck();
                     return Task.FromResult(result);
                 };
-            return this;
         }
 
-        public ResponsiveHostedServiceOptions WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)
+        public void WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)
         {
             ShouldBeRunningAsyncCheck = shouldBeRunningAsyncCheck;
-            return this;
         }
     }
 }
