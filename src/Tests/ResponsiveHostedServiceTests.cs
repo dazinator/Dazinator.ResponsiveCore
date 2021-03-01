@@ -499,7 +499,7 @@ namespace Tests
 
                              a.SetServiceFactory(sp => mockedService)
                               .RespondsTo(tokenProducer, disposable)
-                             .ConfigureRequirements((b) =>
+                             .Requires((b) =>
                              {
                                  // if any return false, the service will not start (or be stopped if its running).
                                  b.IncludeFunc(token => true)
