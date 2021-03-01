@@ -155,4 +155,55 @@ In this case the result of that delegate indicates whether the background servic
 
 I am using the `Changify` library in the sample and in the tests to build the token producer, but you can provide a `Func<IChangeToken>` however you see fit.
 
-4. Start your application with that config setting as `false`. Your service will not start. Whilst the application is running, change the config to be `true` and save that change. The change is detected and your service will now start. Again, whilst your application is running, change the config back to `false` - your service will be stopped. Repeat this ad infinitum - if you have the time, all the while basking in the glory of this responsivity.
+4. Start your application with that config setting as `false`. Your service will not start. Whilst the application is running, change the config to be `true` and save that change. The change is detected and your service will now start. 
+Again, whilst your application is running, change the config back to `false` - your service will be stopped. 
+Repeat this ad infinitum - if you have the time, all the while basking in the glory of this responsivity.
+
+### Alternatively, express service requirements
+
+Rather than passing in a single `Func` to be run via the `WithShouldBeRunningCheck` API, which dictates whether your service should now be running or not,
+you can optionally used the `IRequirement` based api.
+
+So rather than this:
+
+```
+  o.ServiceOptions.RespondsTo(tokenProducer, disposable)
+                                .WithShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+```
+
+You can do this:
+
+```
+ o.ServiceOptions.RespondsTo(tokenProducer, disposable)
+                 .Requires((b) =>
+                              {
+                                  // if any return false, the service will not start (or be stopped if its running).
+                                  b.IncludeFunc(cancelToken => true)
+                                   .Include<MyRequirement>();
+                                   .Include<MyOtherRequirement>(sp=>new MyOtherRequirement());                                   
+                              });
+
+```
+
+
+You can implement a requirement for use with this API as per the following. It will be instantiated and injected with any dependencies.
+It does not need to be registered for DI.
+
+```csharp
+public class MyRequirement : IRequirement        
+{
+        private readonly IFoo _someServiceYouNeed;
+
+        public StatusServiceRequirement(IFoo someServiceYouNeed)
+        {
+            _someServiceYouNeed = someServiceYouNeed;
+        }
+
+        public async Task<bool> IsSatisfied(CancellationToken cancellationToken)
+        {        
+            return await _someServiceYouNeed.IsUpAndRunningAsync();            
+        }
+}
+```
+
+You should take care to handle exceptions within the `IsSatisfied` method, and return true or false.      
