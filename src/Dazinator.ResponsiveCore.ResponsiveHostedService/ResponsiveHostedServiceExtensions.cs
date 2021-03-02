@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 configure(builder);
 
                 var innerService = builder.ServiceResolver(sp);
-                return new ResponsiveHostedServiceAsync<TService>(innerService, builder.ServiceOptions);
+                return new ResponsiveHostedServiceAsync<TService>(innerService, builder.Build());
             });
             return services;
         }

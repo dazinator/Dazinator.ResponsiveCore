@@ -502,9 +502,9 @@ namespace Tests
                               .Requires((b) =>
                               {
                                   // if any return false, the service will not start (or be stopped if its running).
-                                  b.IncludeFunc(token => true)
-                                   .IncludeFunc(token => true)
-                                   .IncludeFunc(token => true);
+                                  b.IncludeFunc(token => isServiceEnabled)
+                                   .IncludeFunc(token => isServiceEnabled)
+                                   .IncludeFunc(token => isServiceEnabled);
                               });
                          });
                  });

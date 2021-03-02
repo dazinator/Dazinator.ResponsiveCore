@@ -9,6 +9,9 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 
     public class ResponsiveHostedServiceOptions
     {
+
+        public const int DefaultDebounceDelayInMs = 500;
+
         public ResponsiveHostedServiceOptions(Func<IChangeToken> changeTokenProducer,
             IDisposable changeTokenProducerLifetime,
             Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)

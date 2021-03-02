@@ -17,7 +17,7 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
         Func<IChangeToken> ChangeTokenProducer { get; set; }
         IDisposable ChangeTokenProducerLifetime { get; set; }
         Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; set; }
-        IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime);
+        IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime, int debounceDelayInMs = ResponsiveHostedServiceOptions.DefaultDebounceDelayInMs);
         void ShouldBeRunning(Func<bool> shouldBeRunningCheck);
         void WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck);
     }

@@ -42,11 +42,10 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
             return this;
         }
 
-        //  public IServiceProvider Services { get; set; }
         public Func<IChangeToken> ChangeTokenProducer { get; set; } = () => EmptyChangeToken.Instance;
         public IDisposable ChangeTokenProducerLifetime { get; set; } = null;
         public Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; set; } = (c) => Task.FromResult(true);
-        public IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime, int debounceDelayInMs = DefaultDebounceDelayInMs)
+        public IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime, int debounceDelayInMs = ResponsiveHostedServiceOptions.DefaultDebounceDelayInMs)
         {
             ChangeTokenProducer = resolver;
             ChangeTokenProducerLifetime = lifetime;
@@ -54,8 +53,8 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
             return this;
         }
 
-        public const int DefaultDebounceDelayInMs = 500;
-        public int DebounceDelayInMilliseconds { get; set; } = DefaultDebounceDelayInMs;
+
+        public int DebounceDelayInMilliseconds { get; set; } = ResponsiveHostedServiceOptions.DefaultDebounceDelayInMs;
 
         public void ShouldBeRunning(Func<bool> shouldBeRunningCheck)
         {

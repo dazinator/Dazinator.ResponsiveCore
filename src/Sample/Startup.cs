@@ -35,8 +35,8 @@ namespace Sample
                                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
                                    .Build(out var disposable);
 
-                o.ServiceOptions.RespondsTo(tokenProducer, disposable)
-                                .ShouldBeRunning(() => monitor.CurrentValue?.Enabled ?? false);
+                o.RespondsTo(tokenProducer, disposable)
+                  .ShouldBeRunning(() => monitor.CurrentValue?.Enabled ?? false);
 
             });
         }
