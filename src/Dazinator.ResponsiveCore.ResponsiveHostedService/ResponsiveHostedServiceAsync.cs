@@ -11,9 +11,6 @@ where TInner : IHostedService
     {
         private readonly TInner _inner;
         private readonly ResponsiveHostedServiceOptions _options;
-        //private readonly Func<IChangeToken> _changeTokenFactory;
-        //private readonly IDisposable _tokenFactoryLifetime;
-        //private readonly Func<CancellationToken, Task<bool>> _shouldBeRunning;
         private IDisposable _listening;
 
         private bool _isRunning;
@@ -30,7 +27,7 @@ where TInner : IHostedService
         {
             _inner = inner;
             _options = options;
-            _listening = ChangeTokenDebouncer.OnChangeDebounce(_options.ChangeTokenProducer, InvokeChanged, delayInMilliseconds: 500);
+            _listening = ChangeTokenDebouncer.OnChangeDebounce(_options.ChangeTokenProducer, InvokeChanged, delayInMilliseconds: options.DebounceDelayInMilliseconds);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -69,6 +66,7 @@ where TInner : IHostedService
         {
             if (_isRunning)
             {
+                // stopping
                 await _inner.StopAsync(cancellationToken);
                 _isRunning = false;
             }
@@ -78,6 +76,7 @@ where TInner : IHostedService
         {
             if (!_isRunning)
             {
+                // starting
                 await _inner.StartAsync(cancellationToken);
                 _isRunning = true;
             }

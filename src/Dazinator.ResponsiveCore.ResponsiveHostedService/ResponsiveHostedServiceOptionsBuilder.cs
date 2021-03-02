@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 
 namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 {
@@ -9,12 +12,12 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
         {
             Services = services;
             ServiceResolver = ActivatorUtilities.GetServiceOrCreateInstance<THostedService>;
-            ServiceOptions = new ResponsiveHostedServiceOptions(Services);
+            //  ServiceOptions = new ResponsiveHostedServiceOptions(Services);
             // ChangeTokenFactoryResolver = (sp) => () => EmptyChangeToken.Instance;
         }
 
         public Func<IServiceProvider, THostedService> ServiceResolver { get; set; }
-        public ResponsiveHostedServiceOptions ServiceOptions { get; set; }
+        //  public ResponsiveHostedServiceOptions ServiceOptions { get; set; }
         public IServiceProvider Services { get; }
 
         /// <summary>
@@ -22,10 +25,10 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public ResponsiveHostedServiceOptions SetServiceFactory(Func<IServiceProvider, THostedService> resolver)
+        public IResponsiveHostedServiceOptionsBuilder SetServiceFactory(Func<IServiceProvider, THostedService> resolver)
         {
             ServiceResolver = resolver;
-            return ServiceOptions;
+            return this;
         }
 
         /// <summary>
@@ -33,10 +36,44 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
         /// </summary>
         /// <param name="resolver"></param>
         /// <returns></returns>
-        public ResponsiveHostedServiceOptions SetServiceFactory(Func<THostedService> resolver)
+        public IResponsiveHostedServiceOptionsBuilder SetServiceFactory(Func<THostedService> resolver)
         {
             ServiceResolver = (s) => resolver();
-            return ServiceOptions;
+            return this;
+        }
+
+        //  public IServiceProvider Services { get; set; }
+        public Func<IChangeToken> ChangeTokenProducer { get; set; } = () => EmptyChangeToken.Instance;
+        public IDisposable ChangeTokenProducerLifetime { get; set; } = null;
+        public Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; set; } = (c) => Task.FromResult(true);
+        public IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime, int debounceDelayInMs = DefaultDebounceDelayInMs)
+        {
+            ChangeTokenProducer = resolver;
+            ChangeTokenProducerLifetime = lifetime;
+            DebounceDelayInMilliseconds = debounceDelayInMs;
+            return this;
+        }
+
+        public const int DefaultDebounceDelayInMs = 500;
+        public int DebounceDelayInMilliseconds { get; set; } = DefaultDebounceDelayInMs;
+
+        public void ShouldBeRunning(Func<bool> shouldBeRunningCheck)
+        {
+            ShouldBeRunningAsyncCheck = (cancelToken) =>
+            {
+                var result = shouldBeRunningCheck();
+                return Task.FromResult(result);
+            };
+        }
+
+        public void WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)
+        {
+            ShouldBeRunningAsyncCheck = shouldBeRunningAsyncCheck;
+        }
+
+        public ResponsiveHostedServiceOptions Build()
+        {
+            return new ResponsiveHostedServiceOptions(ChangeTokenProducer, ChangeTokenProducerLifetime, ShouldBeRunningAsyncCheck);
         }
 
     }

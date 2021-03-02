@@ -9,34 +9,35 @@ namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 
     public class ResponsiveHostedServiceOptions
     {
-        public ResponsiveHostedServiceOptions(IServiceProvider services)
+        public ResponsiveHostedServiceOptions(Func<IChangeToken> changeTokenProducer,
+            IDisposable changeTokenProducerLifetime,
+            Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)
         {
-            Services = services;
-        }
+            if (changeTokenProducer != null)
+            {
+                ChangeTokenProducer = changeTokenProducer;
+            }
+            else
+            {
+                ChangeTokenProducer = () => EmptyChangeToken.Instance;
+            }
 
-        public IServiceProvider Services { get; set; }
-        public Func<IChangeToken> ChangeTokenProducer { get; set; } = () => EmptyChangeToken.Instance;
-        public IDisposable ChangeTokenProducerLifetime { get; set; } = null;
-        public Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; set; } = (c) => Task.FromResult(true);
-        public ResponsiveHostedServiceOptions RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime)
-        {
-            ChangeTokenProducer = resolver;
-            ChangeTokenProducerLifetime = lifetime;
-            return this;
-        }
+            ChangeTokenProducerLifetime = changeTokenProducerLifetime;
 
-        public void WithShouldBeRunningCheck(Func<bool> shouldBeRunningCheck)
-        {
-            ShouldBeRunningAsyncCheck = (cancelToken) =>
-                {
-                    var result = shouldBeRunningCheck();
-                    return Task.FromResult(result);
-                };
-        }
+            if (shouldBeRunningAsyncCheck != null)
+            {
+                ShouldBeRunningAsyncCheck = shouldBeRunningAsyncCheck;
+            }
+            else
+            {
+                ShouldBeRunningAsyncCheck = (c) => Task.FromResult(true);
+            }
 
-        public void WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck)
-        {
-            ShouldBeRunningAsyncCheck = shouldBeRunningAsyncCheck;
         }
+        public Func<IChangeToken> ChangeTokenProducer { get; }
+        public IDisposable ChangeTokenProducerLifetime { get; }
+        public Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; }
+        public int DebounceDelayInMilliseconds { get; set; } = 500;
+
     }
 }

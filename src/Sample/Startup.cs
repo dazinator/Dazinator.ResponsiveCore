@@ -36,7 +36,7 @@ namespace Sample
                                    .Build(out var disposable);
 
                 o.ServiceOptions.RespondsTo(tokenProducer, disposable)
-                                .WithShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+                                .ShouldBeRunning(() => monitor.CurrentValue?.Enabled ?? false);
 
             });
         }

@@ -70,7 +70,7 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .WithShouldBeRunningCheck(() =>
+                         .ShouldBeRunning(() =>
                              {
                                  return isServiceEnabled;
                              });
@@ -119,7 +119,7 @@ namespace Tests
 
                          })
                          .RespondsTo(tokenProducer, disposable)
-                                        .WithShouldBeRunningCheck(() =>
+                                        .ShouldBeRunning(() =>
                                         {
                                             return isServiceEnabled;
                                         });
@@ -181,7 +181,7 @@ namespace Tests
                              return mockedService;
                          })
                          .RespondsTo(tokenProducer, disposable)
-                            .WithShouldBeRunningCheck(() =>
+                            .ShouldBeRunning(() =>
                             {
                                 return isServiceEnabled;
                             });
@@ -248,7 +248,7 @@ namespace Tests
                              return mockedService;
 
                          })
-                         .WithShouldBeRunningCheck(() =>
+                         .ShouldBeRunning(() =>
                          {
                              return isServiceEnabled;
                          });
@@ -302,7 +302,7 @@ namespace Tests
 
                          })
                          .RespondsTo(tokenProducer, disposable)
-                         .WithShouldBeRunningCheck(() =>
+                         .ShouldBeRunning(() =>
                          {
                              return isServiceEnabled;
                          });
@@ -373,7 +373,7 @@ namespace Tests
 
                              a.SetServiceFactory(sp => mockedService)
                               .RespondsTo(tokenProducer, disposable)
-                             .WithShouldBeRunningCheck(() =>
+                             .ShouldBeRunning(() =>
                              {
                                  return monitor.CurrentValue?.IsEnabled ?? false;
                              });
@@ -437,7 +437,7 @@ namespace Tests
 
                              a.SetServiceFactory(sp => mockedService)
                              .RespondsTo(tokenProducer, disposable)
-                             .WithShouldBeRunningCheck(() => isServiceEnabled);
+                             .ShouldBeRunning(() => isServiceEnabled);
                          });
                  });
 
@@ -564,5 +564,42 @@ namespace Tests
             }
         }
     }
+
+
+    //public class PollyCircuitBreakerRequirement : IRequirement
+    //{
+    //    private readonly ILogger<PollyCircuitBreakerRequirement> _logger;
+    //    private readonly ICircuitBreakerPolicy _policy;
+    //    private readonly CircuitState[] _allowedStates;
+    //    private readonly Predicate<ICircuitBreakerPolicy> _check;
+
+    //    public PollyCircuitBreakerRequirement(
+    //        ILogger<PollyCircuitBreakerRequirement> logger,
+    //        ICircuitBreakerPolicy policy,
+    //        params CircuitState[] allowedStates)
+    //    {
+    //        _logger = logger;
+    //        _policy = policy;
+    //        _allowedStates = allowedStates;
+    //    }
+
+    //    public Task<bool> IsSatisfied(CancellationToken cancellationToken)
+    //    {
+    //        if (_policy == null)
+    //        {
+    //            _logger.LogWarning("Policy null");
+    //            return Task.FromResult(false);
+    //        }
+    //        var state = _policy.CircuitState;
+    //        _logger.LogDebug("Circuit status: {status}", state);
+    //        if (_allowedStates == null || _allowedStates.Length == 0)
+    //        {
+    //            _logger.LogWarning("No allowed states.");
+    //            return Task.FromResult(false);
+    //        }
+    //        var allowed = _allowedStates.Contains(state);
+    //        return Task.FromResult(allowed);
+    //    }
+    //}
 
 }

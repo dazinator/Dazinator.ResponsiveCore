@@ -143,8 +143,8 @@ and
                                    .IncludeSubscribingHandlerTrigger((trigger) => monitor.OnChange((o, n) => trigger()))
                                    .Build(out var disposable);
 
-                o.ServiceOptions.RespondsTo(tokenProducer, disposable)
-                                .WithShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+                o.RespondsTo(tokenProducer, disposable)
+                 .ShouldBeRunning(() => monitor.CurrentValue?.Enabled ?? false);
 
             });
 
@@ -167,24 +167,25 @@ you can optionally used the `IRequirement` based api.
 So rather than this:
 
 ```
-  o.ServiceOptions.RespondsTo(tokenProducer, disposable)
-                                .WithShouldBeRunningCheck(() => monitor.CurrentValue?.Enabled ?? false);
+  o.RespondsTo(tokenProducer, disposable)
+   .ShouldBeRunning(() => monitor.CurrentValue?.Enabled ?? false);
 ```
 
-You can do this:
+You can include multiple requirements / conditions like this:
 
 ```
- o.ServiceOptions.RespondsTo(tokenProducer, disposable)
-                 .Requires((b) =>
-                              {
-                                  // if any return false, the service will not start (or be stopped if its running).
-                                  b.IncludeFunc(cancelToken => true)
-                                   .Include<MyRequirement>();
-                                   .Include<MyOtherRequirement>(sp=>new MyOtherRequirement());                                   
-                              });
+ o.RespondsTo(tokenProducer, disposable)
+  .Requires((b) =>
+           {
+               // if any return false, the service will not start (or be stopped if its running).
+               b.IncludeFunc(cancelToken => true)
+                .Include<MyRequirement>();
+                .Include<MyOtherRequirement>(sp=>new MyOtherRequirement());                                   
+           });
 
 ```
 
+This makes things a little more modular.
 
 You can implement a requirement for use with this API as per the following. It will be instantiated and injected with any dependencies.
 It does not need to be registered for DI.

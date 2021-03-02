@@ -1,17 +1,24 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 {
     public interface IResponsiveHostedServiceOptionsBuilder<THostedService> : IResponsiveHostedServiceOptionsBuilder
     {
-        ResponsiveHostedServiceOptions SetServiceFactory(Func<IServiceProvider, THostedService> resolver);
-        ResponsiveHostedServiceOptions SetServiceFactory(Func<THostedService> resolver);
+        IResponsiveHostedServiceOptionsBuilder SetServiceFactory(Func<IServiceProvider, THostedService> resolver);
+        IResponsiveHostedServiceOptionsBuilder SetServiceFactory(Func<THostedService> resolver);
     }
 
     public interface IResponsiveHostedServiceOptionsBuilder
     {
-        ResponsiveHostedServiceOptions ServiceOptions { get; }
         IServiceProvider Services { get; }
-
+        Func<IChangeToken> ChangeTokenProducer { get; set; }
+        IDisposable ChangeTokenProducerLifetime { get; set; }
+        Func<CancellationToken, Task<bool>> ShouldBeRunningAsyncCheck { get; set; }
+        IResponsiveHostedServiceOptionsBuilder RespondsTo(Func<IChangeToken> resolver, IDisposable lifetime);
+        void ShouldBeRunning(Func<bool> shouldBeRunningCheck);
+        void WithAsyncShouldBeRunningCheck(Func<CancellationToken, Task<bool>> shouldBeRunningAsyncCheck);
     }
 }

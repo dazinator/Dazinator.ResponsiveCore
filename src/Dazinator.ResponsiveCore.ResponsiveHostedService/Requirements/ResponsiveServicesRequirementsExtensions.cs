@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ResponsiveServicesRequirementsExtensions
     {
         public static void Requires(
-            this ResponsiveHostedServiceOptions options,
+            this IResponsiveHostedServiceOptionsBuilder options,
             Action<ICompositeRequirementBuilder> configure)
         {
             var builder = new CompositeRequirementBuilder();
