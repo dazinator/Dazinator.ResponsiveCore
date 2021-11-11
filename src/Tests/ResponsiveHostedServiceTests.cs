@@ -190,7 +190,7 @@ namespace Tests
                  });
 
             var result = await host.StartAsync();
-            Assert.Equal(0,startCalled);
+            Assert.Equal(0, startCalled);
             Assert.False(stopCalled);
 
             // trigger change token to apply the enabled state.
