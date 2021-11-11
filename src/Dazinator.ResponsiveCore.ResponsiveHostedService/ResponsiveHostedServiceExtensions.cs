@@ -1,6 +1,7 @@
 ﻿using System;
 using Dazinator.ResponsiveCore.ResponsiveHostedService;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -29,7 +30,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 configure(builder);
 
                 var innerService = builder.ServiceResolver(sp);
-                return new ResponsiveHostedServiceAsync<TService>(innerService, builder.Build());
+                var logger = sp.GetRequiredService<ILogger<ResponsiveHostedServiceAsync<TService>>>();
+                return new ResponsiveHostedServiceAsync<TService>(logger, innerService, builder.Build());
             });
             return services;
         }

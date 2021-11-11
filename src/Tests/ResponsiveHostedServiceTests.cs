@@ -520,6 +520,62 @@ namespace Tests
             Assert.True(stopCalled);
         }
 
+        [Fact]
+        public async Task EnabledService_IsDisposed_WhenHostDisposed()
+        {
+
+            bool startCalled = false;
+            bool stopCalled = false;
+            bool disposeCalled = false;
+            bool isServiceEnabled = true;
+
+            string[] args = null;
+            var host = Host.CreateDefaultBuilder(args)
+                 .ConfigureServices(services =>
+                 {
+                     services.AddResponsiveHostedService<MockDisposableHostedService>(a =>
+                     {
+                         a.SetServiceFactory(sp =>
+                         {
+                             var mockedService = new MockDisposableHostedService(
+                             onStartAsync: async (cancelToken) =>
+                             {
+                                 startCalled = true;
+                             },
+                            onStopAsync: async (cancelToken) =>
+                            {
+                                stopCalled = true;
+                            }, 
+                            onDisposeAsync: async () =>
+                            {
+                                disposeCalled = true;
+                            });
+                             return mockedService;
+
+                         })
+                         .ShouldBeRunning(() =>
+                         {
+                             return isServiceEnabled;
+                         });
+                     });
+
+                 });
+
+            var buildHost = await host.StartAsync();
+            Assert.True(startCalled);
+            Assert.False(stopCalled);
+
+            startCalled = false;
+            await buildHost.StopAsync();
+
+            Assert.False(startCalled);
+            Assert.True(stopCalled);
+
+            buildHost.Dispose();
+            Assert.True(disposeCalled);
+
+        }
+
     }
 
     public class TestClassWithAnEvent
@@ -564,6 +620,19 @@ namespace Tests
             }
         }
     }
+
+    public class MockDisposableHostedService : MockHostedService, IAsyncDisposable
+    {
+        private readonly Func<ValueTask> _onDisposeAsync;
+
+        public MockDisposableHostedService(Func<CancellationToken, Task> onStartAsync, Func<CancellationToken, Task> onStopAsync,  Func<ValueTask> onDisposeAsync):base(onStartAsync, onStopAsync)
+        {
+            _onDisposeAsync = onDisposeAsync;
+        }
+
+        public ValueTask DisposeAsync() => _onDisposeAsync();
+    }
+
 
 
     //public class PollyCircuitBreakerRequirement : IRequirement
