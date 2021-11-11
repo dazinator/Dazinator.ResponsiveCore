@@ -8,9 +8,9 @@ using Microsoft.Extensions.Primitives;
 namespace Dazinator.ResponsiveCore.ResponsiveHostedService
 {
     public class ResponsiveHostedServiceAsync<TInner> : IHostedService, IDisposable
-        #if SUPPORTS_ASYNC_DISPOSABLE
-        ,IAsyncDisposable
-        #endif
+#if SUPPORTS_ASYNC_DISPOSABLE
+        , IAsyncDisposable
+#endif
 where TInner : IHostedService
     {
         private readonly ILogger<ResponsiveHostedService.ResponsiveHostedServiceAsync<TInner>> _logger;
@@ -107,7 +107,7 @@ where TInner : IHostedService
             await StopInnerAsync(token);
         }
 
-       
+
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -130,7 +130,7 @@ where TInner : IHostedService
 
         protected virtual async ValueTask DisposeAsyncCore()
         {
-          
+
             if (_listening is IAsyncDisposable disposable)
             {
                 await disposable.DisposeAsync().ConfigureAwait(false);
@@ -149,10 +149,10 @@ where TInner : IHostedService
                 if (_inner is IDisposable innerDisposable)
                 {
                     innerDisposable?.Dispose();
-                }                
+                }
             }
 
-            _listening = null;          
+            _listening = null;
         }
 
 

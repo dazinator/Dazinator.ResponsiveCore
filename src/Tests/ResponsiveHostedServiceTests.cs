@@ -545,7 +545,7 @@ namespace Tests
                             onStopAsync: async (cancelToken) =>
                             {
                                 stopCalled = true;
-                            }, 
+                            },
                             onDisposeAsync: async () =>
                             {
                                 disposeCalled = true;
@@ -625,7 +625,7 @@ namespace Tests
     {
         private readonly Func<ValueTask> _onDisposeAsync;
 
-        public MockDisposableHostedService(Func<CancellationToken, Task> onStartAsync, Func<CancellationToken, Task> onStopAsync,  Func<ValueTask> onDisposeAsync):base(onStartAsync, onStopAsync)
+        public MockDisposableHostedService(Func<CancellationToken, Task> onStartAsync, Func<CancellationToken, Task> onStopAsync, Func<ValueTask> onDisposeAsync) : base(onStartAsync, onStopAsync)
         {
             _onDisposeAsync = onDisposeAsync;
         }
