@@ -152,7 +152,7 @@ namespace Tests
         public async Task DisabledService_IsStartedOnlyOnce_AfterBeingEnabledMultipleTimesInARow()
         {
 
-            bool startCalled = false;
+            int startCalled = 0;
             bool stopCalled = false;
 
             Action trigger = null;
@@ -172,7 +172,7 @@ namespace Tests
                              var mockedService = new MockHostedService(
                              onStartAsync: async (cancelToken) =>
                              {
-                                 startCalled = true;
+                                 startCalled = Interlocked.Increment(ref startCalled);
                              },
                             onStopAsync: async (cancelToken) =>
                             {
@@ -190,7 +190,7 @@ namespace Tests
                  });
 
             var result = await host.StartAsync();
-            Assert.False(startCalled);
+            Assert.Equal(0,startCalled);
             Assert.False(stopCalled);
 
             // trigger change token to apply the enabled state.
@@ -199,23 +199,23 @@ namespace Tests
             // wait small delay to give time for async reload to complete.
             await Task.Delay(1000);
 
-            Assert.True(startCalled);
+            Assert.Equal(1, startCalled);
             Assert.False(stopCalled);
 
-            startCalled = false;
+            startCalled = 0;
             // enable again
             isServiceEnabled = true;
             trigger();
             // wait small delay to give time for async reload to complete.
             await Task.Delay(500);
             // shouldn't be started a second time as service already running.
-            Assert.False(startCalled);
+            Assert.Equal(0, startCalled);
             Assert.False(stopCalled);
 
-            startCalled = false;
+            startCalled = 0;
             await result.StopAsync();
 
-            Assert.False(startCalled);
+            Assert.Equal(0, startCalled);
             Assert.True(stopCalled);
         }
 
