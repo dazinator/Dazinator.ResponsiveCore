@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net50</TargetFramework>
+    <TargetFramework>net60</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Dazinator.ResponsiveCore.ResponsiveHostedService\ResponsiveHostedService.csproj" />
+      <ProjectReference Include="..\Dazinator.ResponsiveCore.ResponsiveHttpClientFactory\ResponsiveHttpClientFactory.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29924.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "Sample\Sample.csproj", "{62A0CE0B-3F9D-4D69-BC92-0CB104D6F45B}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{728CEC29-772F-4C46-9EF6-EF7FE4182025}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResponsiveHostedService", "Dazinator.ResponsiveCore.ResponsiveHostedService\ResponsiveHostedService.csproj", "{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResponsiveHttpClientFactory", "Dazinator.ResponsiveCore.ResponsiveHttpClientFactory\ResponsiveHttpClientFactory.csproj", "{00F396D0-FEC5-4C37-9FF5-A2ABE83B9530}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -51,6 +53,10 @@ Global
 		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73618EF6-9E0A-4246-8CB6-AF60B2E60EB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F396D0-FEC5-4C37-9FF5-A2ABE83B9530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F396D0-FEC5-4C37-9FF5-A2ABE83B9530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F396D0-FEC5-4C37-9FF5-A2ABE83B9530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F396D0-FEC5-4C37-9FF5-A2ABE83B9530}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
