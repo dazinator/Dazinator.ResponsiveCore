@@ -22,7 +22,7 @@ branches:
     is-release-branch: false
     is-mainline: false
   feature:
-    regex: ^features?[/-]
+    regex: ^features?[/-].*$
     mode: ContinuousDelivery
     tag: useBranchName
     increment: Inherit
